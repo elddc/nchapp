@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, View, Alert} from 'react-native';
 
 //maximum unit is in minutes (assumes will never need hours)
 const Timer = ({active, reset}) => {
@@ -9,25 +9,19 @@ const Timer = ({active, reset}) => {
 	//note: this will not handle pausing (stopping after a reset) because it is not needed in the final use case
 	//display an "are you sure" alert before ending in final version, in case of accidental misclicks
 	useEffect(() => {
-	    if (active && elaspedTime === 0) {
+	    if (active) {
 		    let time = Date.now();
 		    setTimer(setInterval(() => {
 			    setElapsedTime(Math.floor((new Date() - time)/1000));
 		    }, 250));
 	    }
 		else if (!active) {
-			clearInterval(timer);
-			setTimer(false);
+		    clearInterval(timer);
+		    setTimer(false);
 	    }
 
 		return () => clearInterval(timer);
 	}, [active]);
-
-	//reset mechanic used only for development purposes
-	useEffect(() => {
-	    if (reset > 0)
-		    setElapsedTime(0);
-	}, [reset]);
 
 	return (
 		<View style={s.timerContainer}>
