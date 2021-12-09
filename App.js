@@ -1,32 +1,70 @@
-import React, {useState} from 'react';
-import {StyleSheet, Text, View, TouchableHighlight, Dimensions, Platform, Alert} from 'react-native';
-import Constants from 'expo-constants';
+import React, {useState, useEffect} from 'react';
+import {Text, View, TouchableHighlight, Alert, Platform} from 'react-native';
+import {Feather} from '@expo/vector-icons';
+
+import s, {em} from './styles/styles';
+import TimeContext from './context/timecontext';
 
 import Timer from './components/timer';
-import EventLog from './components/eventlog.js';
-
-//ensures reasonably consistent sizing
-//assumes (mobile) app will always open in full screen (not split with another app)
-let metric = Platform.OS === 'web' ? 'window' : 'screen';   //best fit for different platforms
-let vw = Dimensions.get(metric).width / 100;
-let vh = Dimensions.get(metric).height / 100;
-if (vw > vh){   //swaps dimensions if opened in landscape
-	[vw, vh] = [vh, vw];
-}
+import EventLog from './components/eventlog';
+import OptionList from './components/optionlist';
+import Help from './components/help';
 
 const App = () => {
-	const [timer, setTimer] = useState(false); //whether timer is active
-	const [events, setEvents] = useState([]);
+	//timer
+	const [startTime, setStartTime] = useState();
+	const [active, setActive] = useState(false);
+	const [elaspedTime, setElapsedTime] = useState(0); //time in seconds
+	const [timeInterval, setTimeInterval] = useState(); //contains timer loop
 
-	//must toggle in order of start, stop, reset (see timer component for more info)
+	//display
+	const [actions, setActions] = useState({ //inputs
+		CPR: {color: '#114985', timer: true, active: -1}, //start, pause, restart
+		Shock: {color: '#e06924', timer: true, count: 0},
+		Epinephrine: {color: '#cca300', count: 0},
+		Medication: {color: '#898989', list: ['Vasopressin', 'Amiodarone', 'Lidocaine', 'Magnesium Sulfate', 'Other']},
+		Rhythm: {color: '#208552', list: ['VT', 'Pulseless VT', 'PEA', 'Asystole', 'Other']},
+		Event: {color: '#5548AB', list: [
+				'Oxygen', 'IV access', 'IO access', 'Advanced airway: Supraglottic airway', 'Advanced airway: Endotracheal intubation',
+				'Waveform capnography', 'OPA (oropharyngeal airway)', 'NPA (nasopharyngeal airway)', 'Backboard', 'Defibrillator: Pads applied'
+			]},
+		ROSC: {color: '#784124'},
+		Other: {enterText: true}
+	});
+	const [events, setEvents] = useState([]); //list of events that have occurred
+	const [displayOptions, setDisplayOptions] = useState(false)
+	const [displayHelp, setDisplayHelp] = useState(false); //visibility of help modal
+
+	//note: this will not handle pausing because it is not needed in the final use case
+	useEffect(() => {
+		if (active) {
+			let time = new Date();
+			setStartTime(time);
+			setTimeInterval(setInterval(() => {
+				setElapsedTime(Math.floor((Date.now() - time)/1000));
+			}, 250));
+		}
+		else {
+			clearInterval(timeInterval);
+			setTimeInterval(false);
+		}
+
+		return () => clearInterval(timeInterval);
+	}, [active]);
+
 	const toggleTimer = () => {
-		if (!timer) {
-			setTimer(true);
+		if (!active) {
+			setActive(true);
+			logEvent('Start');
+		}
+		else if (Platform.OS === 'web' && confirm('Are you sure you want to end the timer?')) {
+			setActive(false);
+			logEvent('End');
 		}
 		else {
 			Alert.alert(
 				'Are you sure you want to end the timer?',
-				'You will not be able to return to this page',
+				'',
 				[
 					{
 						text: 'No',
@@ -35,7 +73,8 @@ const App = () => {
 					{
 						text: 'Yes',
 						onPress: () => {
-							setTimer(!timer)
+							setActive(false);
+							logEvent('End');
 						}
 					}
 				],
@@ -44,63 +83,86 @@ const App = () => {
 		}
 	};
 
-	const logEvent = (number) => {
-		setEvents([...events, number]);
+	//add event to event log
+	//note: name is not always key in actions!
+	const logEvent = (name) => {
+		if (name.includes('CPR')) {
+			setActions({...actions, CPR: {...actions.CPR, active: (actions.CPR.active < 1 ? 1 : 0)}})
+		}
+		else if (name === 'End') {
+			setActions({...actions, CPR: {...actions.CPR, active: -1}})
+		}
+		else if (actions[name] && actions[name].list) {
+			openOptionList(name);
+			return;
+		}
+
+		let previousEvents = (name === 'Start') ? [] : [...events];
+
+		if (!active && name !== 'Start') {
+			toggleTimer();
+			previousEvents = [{name: 'Start', time: new Date()}];
+		}
+
+		setEvents([...previousEvents, {
+			name: name,
+			time: new Date()
+		}]);
+	}
+
+	const openOptionList = (name) => {
+		setDisplayOptions({name, options: actions[name].list});
 	}
 
 	return (
 		<View style={s.container}>
-			<Timer active={timer} />
-			<TouchableHighlight style={[s.button, {backgroundColor: (timer ? '#de1245' : '#16c6a3')}]} onPress={toggleTimer}>
-				<Text style={s.buttonText}>{timer ? 'Stop' : 'Start'}</Text>
+			<TimeContext.Provider value={startTime}>
+				<View style={s.main}>
+					<View>
+						<Timer active={active} toggleTimer={toggleTimer} elaspedTime={elaspedTime} />
+						<View style={s.wrapRow}>
+							{Object.keys(actions).map((name) => {
+								const {color, active} = actions[name];
+
+								switch (active){
+									case -1:
+										name = 'Start CPR';
+										break;
+									case 0:
+										name = 'Restart CPR';
+										break;
+									case 1:
+										name = 'Pause CPR';
+										break;
+								}
+
+								return (
+									<TouchableHighlight
+										style={[s.actionButton, {backgroundColor: (active > 0) ? '#269399' : color}]}
+										onPress={() => logEvent(name)}
+										key={name}
+									>
+										<Text style={s.buttonText}>{name}</Text>
+									</TouchableHighlight>
+								);
+							})}
+						</View>
+					</View>
+					<EventLog events={events} />
+				</View>
+			</TimeContext.Provider>
+			<TouchableHighlight onPress={() => {setDisplayHelp(!displayHelp)}} style={s.help}>
+				<Feather name='help-circle' size={1.8*em} color='white' />
 			</TouchableHighlight>
-			<TouchableHighlight style={[s.button]} onPress={() => logEvent(1)}>
-				<Text style={s.buttonText}>Event 1</Text>
-			</TouchableHighlight>
-			<TouchableHighlight style={[s.button]} onPress={() => logEvent(2)}>
-				<Text style={s.buttonText}>Event 2</Text>
-			</TouchableHighlight>
-			<TouchableHighlight style={[s.button]} onPress={() => logEvent(3)}>
-				<Text style={s.buttonText}>Event 3</Text>
-			</TouchableHighlight>
-			<EventLog t={events} />
+			<OptionList
+				title={displayOptions.name}
+				options={displayOptions.options}
+				visible={displayOptions}
+				dismiss={() => {setDisplayOptions(false)}}
+			/>
+			<Help visible={displayHelp} dismiss={() => {setDisplayHelp(false)}}/>
 		</View>
 	);
 }
-
-const s = StyleSheet.create({
-	container: {
-		flex: 1,
-		justifyContent: 'center',
-		alignContent: 'center',
-		paddingTop: Constants.statusBarHeight,
-		backgroundColor: 'black',
-		padding: 8,
-	},
-	timerContainer: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		justifyContent: 'center',
-	},
-	button: {
-		margin: 1*vh,
-		padding: 3*vw,
-		minHeight: 12*vw,
-		width: 50*vw,
-		alignItems: 'center',
-		justifyContent: 'center',
-		alignSelf: 'center',
-		borderRadius: 5*vh,
-	},
-	buttonText: {
-		color: 'white',
-		fontSize: 18,
-		fontWeight: 'bold',
-	},
-	timerText: {
-		color: 'white',
-		fontSize: 52,
-	},
-});
 
 export default App;
