@@ -29,21 +29,26 @@ let row = {
 	justifyContent: 'space-between',
 	alignItems: 'center',
 	alignSelf: 'center',
-	width: (landscape ? null : 95*vw),
+	width: (landscape ? null : 95 * vw),
+};
+let tableRow = {
+	...row,
+	paddingVertical: .75*em,
+	backgroundColor: 'black',
 };
 let wrapRow = {
 	...row,
 	...center,
 	flexWrap: 'wrap',
-	width: (landscape ? 55*vw : row.width),
-	marginTop: .2*em,
+	width: (landscape ? 55 * vw : row.width),
+	marginTop: .2 * em,
 };
 let button = {
 	...center,
-	minHeight: 2*vh,
+	minHeight: 2 * vh,
 	margin: vh,
-	padding: 2.5*vw,
-	borderRadius: 5*vh,
+	padding: 2.5 * vw,
+	borderRadius: 5 * vh,
 	alignSelf: 'center',
 };
 let actionButton = {
@@ -59,47 +64,57 @@ let container = {
 	flex: 1,
 	alignItems: 'center',
 	backgroundColor: 'black',
-	padding: 2*vh,
-	paddingTop: (Platform.OS === 'web' ? 2*vh : Constants.statusBarHeight),
+	paddingTop: (Platform.OS === 'web' ? 2 * vh : Constants.statusBarHeight),
 };
 let main = {
 	flexDirection: (landscape ? 'row' : 'column'),
 	alignSelf: 'center',
-	paddingBottom: 2*vh,
+	padding: 2 * vh,
 };
 let timerContainer = {
-	padding: .8*em,
+	padding: .8 * em,
 	alignSelf: 'center',
+};
+let fullscreen = {
+	...container,
+	position: 'absolute',
+	top: 0,
+	left: 0,
+	height: '100%',
+	width: '100%',
+	backgroundColor: 'black',
 };
 let timer = {
 	borderWidth: 4,
-	borderRadius: 2.2*em,
-	padding: .5*em,
-	width: (landscape ? 50*vw : 80*vw),
+	borderRadius: 2.2 * em,
+	padding: .5 * em,
+	width: (landscape ? 50 * vw : 80 * vw),
 };
 let timerText = {
 	...text,
-	fontSize: 4*em,
+	fontSize: 4 * em,
 	textAlign: 'center',
+	fontVariant: ['tabular-nums'],
 };
 let cell = {
 	...text,
-	fontSize: em,
-	height: 1.4*em,
-	minWidth: 29*vw,
+	flex: 1,
+	flexWrap: 'wrap',
+	minHeight: 1.4 * em,
 	textAlign: 'center',
+	fontSize: em,
 };
-let header = {
+let headerCell = {
 	...cell,
 	fontWeight: 'bold',
 };
 let eventLog = {
-	marginVertical: 1.2*em,
+	marginVertical: 1.2 * em,
 };
 let help = {
 	position: 'absolute',
-	bottom: 2*em,
-	right: 2*em,
+	bottom: 2 * em,
+	right: 2 * em,
 };
 let overlay = {
 	height: '100%',
@@ -109,14 +124,49 @@ let overlay = {
 };
 let modal = {
 	backgroundColor: 'white',
-	width: 80*vw,
-	borderRadius: 2*em,
+	width: 80 * vw,
+	borderRadius: 2 * em,
 	alignSelf: 'center',
-	padding: 2*em,
+	padding: 2 * em,
 };
 let modalText = {
 	...text,
 	color: 'black',
+};
+let hidden = {
+	display: 'none',
+};
+let option = {
+	padding: .6*em,
+	paddingLeft: .8*em,
+	textAlign: 'left',
+	width: '100%',
+	borderBottomWidth: 2,
+	borderColor: 'white',
+}
+let optionText = {
+	...text,
+	fontSize: 1.5*em,
+};
+let header = {
+	...row,
+	justifyContent: 'flex-start',
+	width: '100%',
+	paddingBottom: .8*em,
+	borderBottomWidth: 2,
+	borderColor: 'white',
+};
+let headerText = {
+	...text,
+	fontSize: 2*em,
+	fontWeight: 'bold',
+	marginLeft: .5*em,
+};
+let horiLine = {
+	borderBottomWidth: 1,
+	borderColor: 'white',
+	width: 95*vw,
+	alignSelf: 'center',
 }
 
 //doesn't cause re-render
@@ -131,12 +181,15 @@ Dimensions.addEventListener('change', ({window}) => {
 });
 
 const styles = {
-	center, text, row, wrapRow,
+	center, text, row, tableRow, wrapRow,
 	button, buttonText, actionButton,
-	container, main,
+	container, main, fullscreen,
 	timerContainer, timer, timerText,
-	cell, header, eventLog,
+	cell, headerCell, eventLog,
 	help, overlay, modal, modalText,
+	option, optionText, header, headerText,
+	hidden,
+	horiLine,
 };
 
 export default styles;

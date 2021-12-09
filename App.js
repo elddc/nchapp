@@ -25,11 +25,11 @@ const App = () => {
 		Medication: {color: '#898989', list: ['Vasopressin', 'Amiodarone', 'Lidocaine', 'Magnesium Sulfate', 'Other']},
 		Rhythm: {color: '#208552', list: ['VT', 'Pulseless VT', 'PEA', 'Asystole', 'Other']},
 		Event: {color: '#5548AB', list: [
-				'Oxygen', 'IV access', 'IO access', 'Advanced airway: Supraglottic airway', 'Advanced airway: Endotracheal intubation',
-				'Waveform capnography', 'OPA (oropharyngeal airway)', 'NPA (nasopharyngeal airway)', 'Backboard', 'Defibrillator: Pads applied'
-			]},
+			'Oxygen', 'IV access', 'IO access', 'Advanced airway: Supraglottic airway', 'Advanced airway: Endotracheal intubation',
+			'Waveform capnography', 'OPA (oropharyngeal airway)', 'NPA (nasopharyngeal airway)', 'Backboard', 'Defibrillator: Pads applied',
+		],},
 		ROSC: {color: '#784124'},
-		Other: {enterText: true}
+		Other: {enterText: true},
 	});
 	const [events, setEvents] = useState([]); //list of events that have occurred
 	const [displayOptions, setDisplayOptions] = useState(false)
@@ -41,7 +41,7 @@ const App = () => {
 			let time = new Date();
 			setStartTime(time);
 			setTimeInterval(setInterval(() => {
-				setElapsedTime(Math.floor((Date.now() - time)/1000));
+				setElapsedTime(Math.floor((Date.now() - time) / 1000));
 			}, 250));
 		}
 		else {
@@ -68,17 +68,17 @@ const App = () => {
 				[
 					{
 						text: 'No',
-						style: 'destructive'
+						style: 'destructive',
 					},
 					{
 						text: 'Yes',
 						onPress: () => {
 							setActive(false);
 							logEvent('End');
-						}
-					}
+						},
+					},
 				],
-				{ cancelable: true }
+				{cancelable: true},
 			)
 		}
 	};
@@ -106,7 +106,7 @@ const App = () => {
 
 		setEvents([...previousEvents, {
 			name: name,
-			time: new Date()
+			time: new Date(),
 		}]);
 	}
 
@@ -124,7 +124,7 @@ const App = () => {
 							{Object.keys(actions).map((name) => {
 								const {color, active} = actions[name];
 
-								switch (active){
+								switch (active) {
 									case -1:
 										name = 'Start CPR';
 										break;
@@ -151,16 +151,23 @@ const App = () => {
 					<EventLog events={events} />
 				</View>
 			</TimeContext.Provider>
-			<TouchableHighlight onPress={() => {setDisplayHelp(!displayHelp)}} style={s.help}>
-				<Feather name='help-circle' size={1.8*em} color='white' />
+			<TouchableHighlight onPress={() => {
+				setDisplayHelp(!displayHelp)
+			}} style={s.help}>
+				<Feather name={'help-circle'} size={1.8 * em} color={'white'} />
 			</TouchableHighlight>
 			<OptionList
 				title={displayOptions.name}
 				options={displayOptions.options}
 				visible={displayOptions}
-				dismiss={() => {setDisplayOptions(false)}}
+				dismiss={() => {
+					setDisplayOptions(false)
+				}}
+				select={logEvent}
 			/>
-			<Help visible={displayHelp} dismiss={() => {setDisplayHelp(false)}}/>
+			<Help visible={displayHelp} dismiss={() => {
+				setDisplayHelp(false)
+			}} />
 		</View>
 	);
 }

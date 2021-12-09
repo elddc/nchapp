@@ -1,5 +1,5 @@
 import React, {createContext} from 'react';
 
-const TimeContext = createContext({});
+const TimeContext = createContext(null);
 
 export default TimeContext;

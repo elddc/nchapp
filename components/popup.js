@@ -12,9 +12,9 @@ const Popup = ({visible, dismiss, content}) => {
 			supportedOrientations={['portrait', 'landscape']}
 		>
 			<TouchableHighlight onPress={dismiss} style={s.overlay} underlayColor={'transparent'}>
-			    <TouchableHighlight style={s.modal}>
-    				{content}
-    			</TouchableHighlight>
+				<TouchableHighlight style={s.modal}>
+					{content}
+				</TouchableHighlight>
 			</TouchableHighlight>
 		</Modal>
 	);
