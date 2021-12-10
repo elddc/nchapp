@@ -10,7 +10,8 @@ const Timer = ({toggleTimer, active, elaspedTime}) => {
 	return (
 		<View style={s.timerContainer}>
 			<TouchableHighlight
-				onPress={toggleTimer}
+				onPress={() => toggleTimer(false)}
+				onLongPress={() => toggleTimer(true)}
 				style={[s.timer, {borderColor: (active ? '#de1245' : 'white')}]}
 			>
 				<Text style={s.timerText}>

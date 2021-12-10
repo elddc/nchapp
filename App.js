@@ -52,10 +52,14 @@ const App = () => {
 		return () => clearInterval(timeInterval);
 	}, [active]);
 
-	const toggleTimer = () => {
+	const toggleTimer = (auto = false) => {
 		if (!active) {
 			setActive(true);
 			logEvent('Start');
+		}
+		else if (auto) {
+			setActive(false);
+			logEvent('End');
 		}
 		else if (Platform.OS === 'web' && confirm('Are you sure you want to end the timer?')) {
 			setActive(false);
