@@ -155,6 +155,7 @@ let header = {
 	paddingBottom: .8*em,
 	borderBottomWidth: 2,
 	borderColor: 'white',
+	backgroundColor: 'black',
 };
 let headerText = {
 	...text,

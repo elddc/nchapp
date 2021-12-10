@@ -13,7 +13,7 @@ const Option = ({name, select}) => {
 
 const OptionList = ({title, options, visible, dismiss, select}) => {
 	return (
-		<View style={[s.fullscreen, !visible && s.hidden]}>
+		<View style={visible ? s.fullscreen : s.hidden}>
 			<FlatList
 				style={{width: '100%'}}
 				data={options}
