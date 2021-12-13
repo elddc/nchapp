@@ -35,7 +35,6 @@ const App = () => {
 	const [displayOptions, setDisplayOptions] = useState(false)
 	const [displayHelp, setDisplayHelp] = useState(false); //visibility of help modal
 
-	//note: this will not handle pausing because it is not needed in the final use case
 	useEffect(() => {
 		if (active) {
 			let time = new Date();
@@ -90,11 +89,17 @@ const App = () => {
 	//add event to event log
 	//note: name is not always key in actions!
 	const logEvent = (name) => {
+		console.log(actions)
+
 		if (name.includes('CPR')) {
-			setActions({...actions, CPR: {...actions.CPR, active: (actions.CPR.active < 1 ? 1 : 0)}})
+			let prevActions = {...actions};
+			prevActions['CPR'] = {...actions.CPR, active: (actions.CPR.active < 1 ? 1 : 0)};
+			setActions(prevActions);
 		}
 		else if (name === 'End') {
-			setActions({...actions, CPR: {...actions.CPR, active: -1}})
+			let prevActions = {...actions};
+			prevActions['CPR'] = {...actions.CPR, active: -1};
+			setActions(prevActions);
 		}
 		else if (actions[name] && actions[name].list) {
 			openOptionList(name);

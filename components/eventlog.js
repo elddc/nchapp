@@ -37,6 +37,10 @@ const Separator = () => {
 
 //full table
 const EventLog = ({events}) => {
+	if (events.length < 1) {
+		return null;
+	}
+
 	return (
 		<FlatList
 			data={events}
