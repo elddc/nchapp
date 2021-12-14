@@ -1,5 +1,5 @@
 import React from 'react';
-import {Dimensions, Platform} from 'react-native';
+import {Dimensions, Platform, Stylesheet} from 'react-native';
 import Constants from 'expo-constants';
 //react-native StyleSheet does not offer improved performance or notable utility, replaced by JS objects
 
@@ -168,7 +168,17 @@ let horiLine = {
 	borderColor: 'white',
 	width: 95*vw,
 	alignSelf: 'center',
-}
+};
+let textbox = {
+	...text,
+	color: 'black',
+};
+let textboxContainer = {
+	padding: .5*em,
+	marginBottom: 1.2*em,
+	borderBottomWidth: 2,
+	borderColor: 'black',
+};
 
 //doesn't cause re-render
 Dimensions.addEventListener('change', ({window}) => {
@@ -189,6 +199,7 @@ const styles = {
 	cell, headerCell, eventLog,
 	help, overlay, modal, modalText,
 	option, optionText, header, headerText,
+	textbox, textboxContainer,
 	hidden,
 	horiLine,
 };

@@ -8,6 +8,7 @@ import TimeContext from './context/timecontext';
 import Timer from './components/timer';
 import EventLog from './components/eventlog';
 import OptionList from './components/optionlist';
+import OptionInput from './components/optioninput';
 import Help from './components/help';
 
 const App = () => {
@@ -25,14 +26,16 @@ const App = () => {
 		Medication: {color: '#898989', list: ['Vasopressin', 'Amiodarone', 'Lidocaine', 'Magnesium Sulfate', 'Other']},
 		Rhythm: {color: '#208552', list: ['VT', 'Pulseless VT', 'PEA', 'Asystole', 'Other']},
 		Event: {color: '#5548AB', list: [
-			'Oxygen', 'IV access', 'IO access', 'Advanced airway: Supraglottic airway', 'Advanced airway: Endotracheal intubation',
-			'Waveform capnography', 'OPA (oropharyngeal airway)', 'NPA (nasopharyngeal airway)', 'Backboard', 'Defibrillator: Pads applied',
+			'Oxygen', 'IV access', 'IO access', 'Advanced airway: Supraglottic airway',
+			'Advanced airway: Endotracheal intubation', 'Waveform capnography', 'OPA (oropharyngeal airway)',
+				'NPA (nasopharyngeal airway)', 'Backboard', 'Defibrillator: Pads applied', 'Other'
 		],},
 		ROSC: {color: '#784124'},
 		Other: {enterText: true},
 	});
 	const [events, setEvents] = useState([]); //list of events that have occurred
-	const [displayOptions, setDisplayOptions] = useState(false)
+	const [displayOptions, setDisplayOptions] = useState(false); //options to display in list
+	const [displayInput, setDisplayInput] = useState(false); //visibility of text input
 	const [displayHelp, setDisplayHelp] = useState(false); //visibility of help modal
 
 	useEffect(() => {
@@ -89,8 +92,6 @@ const App = () => {
 	//add event to event log
 	//note: name is not always key in actions!
 	const logEvent = (name) => {
-		console.log(actions)
-
 		if (name.includes('CPR')) {
 			let prevActions = {...actions};
 			prevActions['CPR'] = {...actions.CPR, active: (actions.CPR.active < 1 ? 1 : 0)};
@@ -100,6 +101,10 @@ const App = () => {
 			let prevActions = {...actions};
 			prevActions['CPR'] = {...actions.CPR, active: -1};
 			setActions(prevActions);
+		}
+		else if (name === 'Other') {
+			setDisplayInput(true);
+			return;
 		}
 		else if (actions[name] && actions[name].list) {
 			openOptionList(name);
@@ -169,14 +174,11 @@ const App = () => {
 				title={displayOptions.name}
 				options={displayOptions.options}
 				visible={displayOptions}
-				dismiss={() => {
-					setDisplayOptions(false)
-				}}
+				dismiss={() => setDisplayOptions(false)}
 				select={logEvent}
 			/>
-			<Help visible={displayHelp} dismiss={() => {
-				setDisplayHelp(false)
-			}} />
+			<OptionInput visible={displayInput} submit={logEvent} dismiss={() => setDisplayInput(false)} />
+			<Help visible={displayHelp} dismiss={() => {setDisplayHelp(false)}} />
 		</View>
 	);
 }
