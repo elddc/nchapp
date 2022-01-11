@@ -10,16 +10,17 @@ import EventLog from './components/eventlog';
 import OptionList from './components/optionlist';
 import OptionInput from './components/optioninput';
 import Help from './components/help';
+import ActionButtons from './components/actionbuttons';
 
 const App = () => {
 	//timer
-	const [startTime, setStartTime] = useState();
-	const [active, setActive] = useState(false);
-	const [elaspedTime, setElapsedTime] = useState(0); //time in seconds
+	const [startTime, setStartTime] = useState(); //timestamp
+	const [active, setActive] = useState(false); //whether timer is active
+	const [elaspedTime, setElapsedTime] = useState(0); //time elapsed in seconds
 	const [timeInterval, setTimeInterval] = useState(); //contains timer loop
 
 	//display
-	const [actions, setActions] = useState({ //inputs
+	const [actions, setActions] = useState({ //data for input buttons
 		CPR: {color: '#114985', timer: true, active: -1}, //start, pause, restart
 		Shock: {color: '#e06924', timer: true, count: 0},
 		Epinephrine: {color: '#cca300', count: 0},
@@ -34,7 +35,7 @@ const App = () => {
 		Other: {enterText: true},
 	});
 	const [events, setEvents] = useState([]); //list of events that have occurred
-	const [displayOptions, setDisplayOptions] = useState(false); //options to display in list
+	const [displayOptions, setDisplayOptions] = useState(false); //options to display in popup list
 	const [displayInput, setDisplayInput] = useState(false); //visibility of text input
 	const [displayHelp, setDisplayHelp] = useState(false); //visibility of help modal
 
@@ -134,33 +135,7 @@ const App = () => {
 				<View style={s.main}>
 					<View>
 						<Timer active={active} toggleTimer={toggleTimer} elaspedTime={elaspedTime} />
-						<View style={s.wrapRow}>
-							{Object.keys(actions).map((name) => {
-								const {color, active} = actions[name];
-
-								switch (active) {
-									case -1:
-										name = 'Start CPR';
-										break;
-									case 0:
-										name = 'Restart CPR';
-										break;
-									case 1:
-										name = 'Pause CPR';
-										break;
-								}
-
-								return (
-									<TouchableHighlight
-										style={[s.actionButton, {backgroundColor: (active > 0) ? '#269399' : color}]}
-										onPress={() => logEvent(name)}
-										key={name}
-									>
-										<Text style={s.buttonText}>{name}</Text>
-									</TouchableHighlight>
-								);
-							})}
-						</View>
+						<ActionButtons actions={actions} logEvent={logEvent} />
 					</View>
 					<EventLog events={events} />
 				</View>
