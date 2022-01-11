@@ -1,7 +1,7 @@
 import React, {useContext, useEffect, useRef} from 'react';
-import {View, Text, FlatList} from 'react-native';
+import {View, Text, FlatList, ScrollView} from 'react-native';
 
-import s from '../styles/styles';
+import s, {em} from '../styles/styles';
 import TimeContext from '../context/timecontext';
 import {formatMilliseconds} from '../util/formattime';
 
@@ -38,6 +38,7 @@ const Separator = () => {
 //full table
 const EventLog = ({events}) => {
 	const list = useRef(false);
+	const count = useRef(0);
 
 	useEffect(() => {
 		const timeout = setTimeout(scrollToEnd, 50);
@@ -50,7 +51,7 @@ const EventLog = ({events}) => {
 	}
 
 	if (events.length < 1) {
-		return null;
+		return <ScrollView />;
 	}
 	return (
 		<FlatList
@@ -58,8 +59,9 @@ const EventLog = ({events}) => {
 			renderItem={({item}) => (
 				<Row name={item.name} time={item.time} />
 			)}
-			keyExtractor={item => `${item.name} @ ${item.time}`}
-			ListHeaderComponent={events.length > 0 ? Header : null}
+			keyExtractor={item => count.current++}
+			ListHeaderComponent={Header}
+			ListFooterComponent={<View style={{height: 2.4*em}} />}
 			ItemSeparatorComponent={Separator}
 			stickyHeaderIndices={[0]}
 			directionalLockEnabled={true}
