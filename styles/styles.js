@@ -174,10 +174,12 @@ let textbox = {
 	color: 'black',
 };
 let textboxContainer = {
+	flexDirection: 'row',
 	padding: .5*em,
 	marginBottom: 1.2*em,
 	borderBottomWidth: 2,
 	borderColor: 'black',
+	paddingRight: 2.5*em,
 };
 
 //doesn't cause re-render

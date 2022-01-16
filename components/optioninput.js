@@ -1,7 +1,8 @@
 import React, {useState} from 'react';
 import {View, Text, TextInput, TouchableHighlight} from 'react-native';
-import s from '../styles/styles';
-import Popup from './popup'
+import {Feather} from '@expo/vector-icons';
+import s, {em} from '../styles/styles';
+import Popup from './popup';
 
 const OptionInput = ({visible, submit, dismiss}) => {
 	const [text, setText] = useState('');
@@ -10,6 +11,11 @@ const OptionInput = ({visible, submit, dismiss}) => {
 	const submitText = () => {
 		submit(text);
 		dismiss();
+	}
+
+	//clear text input
+	const clearText = () => {
+		setText('');
 	}
 
 	return (
@@ -26,6 +32,13 @@ const OptionInput = ({visible, submit, dismiss}) => {
 							style={s.textbox}
 							placeholder={'Type here'}
 						/>
+						<TouchableHighlight onPress={clearText} style={{
+							position: 'absolute',
+							top: .5*em,
+							right: .5*em,
+						}}>
+						    <Feather name={'x'} size={1.5 * em} color={'black'} />
+						</TouchableHighlight>
 					</View>
 					<View style={[s.row, {width: '100%'}]}>
 						<TouchableHighlight underlayColor={'transparent'} onPress={dismiss} style={s.actionButton}>
