@@ -172,9 +172,9 @@ let horiLine = {
 let textbox = {
 	...text,
 	color: 'black',
+	outlineStyle: 'none',
 };
 let textboxContainer = {
-	flexDirection: 'row',
 	padding: .5*em,
 	marginBottom: 1.2*em,
 	borderBottomWidth: 2,
