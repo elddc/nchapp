@@ -22,7 +22,7 @@ const ActionButtons = ({actions, logEvent}) => {
 
 				return (
 					<TouchableHighlight
-						style={[s.actionButton, {backgroundColor: (active > 0) ? '#269399' : color}]}
+						style={[s.actionButton, {backgroundColor: (active > 0) ? '#268f99' : color}]}
 						onPress={() => logEvent(name)}
 						key={name}
 					>

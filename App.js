@@ -1,8 +1,8 @@
 import React, {useState, useEffect} from 'react';
-import {Text, View, TouchableHighlight, Alert, Platform} from 'react-native';
+import {Text, View, TouchableHighlight, StatusBar, Alert, Platform} from 'react-native';
 import {Feather} from '@expo/vector-icons';
 
-import s, {em} from './styles/styles';
+import s, {em, landscape, vh} from './styles/styles';
 import TimeContext from './context/timecontext';
 
 import Timer from './components/timer';
@@ -33,6 +33,7 @@ const App = () => {
 		],},
 		ROSC: {color: '#784124'},
 		Other: {enterText: true},
+		//Metronome: {color: '#7c933e'},
 	});
 	const [events, setEvents] = useState([]); //list of events that have occurred
 	const [displayOptions, setDisplayOptions] = useState(false); //options to display in popup list
@@ -131,6 +132,7 @@ const App = () => {
 
 	return (
 		<View style={s.container}>
+			<StatusBar barStyle={'light-content'} />
 			<TimeContext.Provider value={startTime}>
 				<View style={s.main}>
 					<View>
@@ -140,9 +142,7 @@ const App = () => {
 					<EventLog events={events} />
 				</View>
 			</TimeContext.Provider>
-			<TouchableHighlight onPress={() => {
-				setDisplayHelp(!displayHelp)
-			}} style={s.help}>
+			<TouchableHighlight onPress={() => setDisplayHelp(!displayHelp)} style={s.help}>
 				<Feather name={'help-circle'} size={1.8 * em} color={'white'} />
 			</TouchableHighlight>
 			<OptionList

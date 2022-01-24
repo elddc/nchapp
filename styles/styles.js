@@ -1,6 +1,5 @@
 import React from 'react';
 import {Dimensions, Platform} from 'react-native';
-import Constants from 'expo-constants';
 //react-native StyleSheet does not offer improved performance or notable utility, replaced by JS objects
 
 //dynamic sizing
@@ -21,7 +20,6 @@ let center = {
 let text = {
 	color: 'white',
 	fontSize: em,
-	//fontFamily: 'Avenir', //iOS only
 };
 let row = {
 	display: 'flex',
@@ -55,6 +53,10 @@ let actionButton = {
 	...button,
 	flexBasis: '45%',
 };
+let dialogButton = {
+	...actionButton,
+	marginVertical: 0,
+}
 let buttonText = {
 	...text,
 	fontWeight: 'bold',
@@ -64,7 +66,7 @@ let container = {
 	flex: 1,
 	alignItems: 'center',
 	backgroundColor: 'black',
-	paddingTop: (Platform.OS === 'web' ? 2*vh : Constants.statusBarHeight),
+	paddingTop: 1.2*vh,
 };
 let main = {
 	flexDirection: (landscape ? 'row' : 'column'),
@@ -72,7 +74,7 @@ let main = {
 	padding: 2*vh,
 };
 let timerContainer = {
-	padding: .8*em,
+	padding: .6*em,
 	alignSelf: 'center',
 };
 let fullscreen = {
@@ -88,7 +90,7 @@ let timer = {
 	borderWidth: 4,
 	borderRadius: 2.2*em,
 	padding: .5*em,
-	width: (landscape ? 50*vw : 80*vw),
+	width: (landscape ? 50*vw : 88*vw),
 };
 let timerText = {
 	...text,
@@ -125,9 +127,10 @@ let overlay = {
 let modal = {
 	backgroundColor: 'white',
 	width: 80*vw,
-	borderRadius: 2*em,
+	borderRadius: 4*vh,
 	alignSelf: 'center',
-	padding: 2*em,
+	paddingVertical: 2*vh,
+	paddingHorizontal: 5*vw,
 };
 let modalText = {
 	...text,
@@ -172,11 +175,12 @@ let horiLine = {
 let textbox = {
 	...text,
 	color: 'black',
-	outlineStyle: 'none',
+	outlineStyle: (Platform.OS === 'web' ? 'none' : null),
 };
 let textboxContainer = {
 	padding: .5*em,
-	marginBottom: 1.2*em,
+	marginTop: 2*vh,
+	marginBottom: 2.5*vh,
 	borderBottomWidth: 2,
 	borderColor: 'black',
 	paddingRight: 2.5*em,
@@ -195,7 +199,7 @@ Dimensions.addEventListener('change', ({window}) => {
 
 const styles = {
 	center, text, row, tableRow, wrapRow,
-	button, buttonText, actionButton,
+	button, buttonText, actionButton, dialogButton,
 	container, main, fullscreen,
 	timerContainer, timer, timerText,
 	cell, headerCell, eventLog,
@@ -207,4 +211,4 @@ const styles = {
 };
 
 export default styles;
-export {vw, vh, em};
+export {vw, vh, em, landscape};

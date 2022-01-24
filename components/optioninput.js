@@ -41,10 +41,10 @@ const OptionInput = ({visible, submit, dismiss}) => {
 						</TouchableHighlight>
 					</View>
 					<View style={[s.row, {width: '100%'}]}>
-						<TouchableHighlight underlayColor={'transparent'} onPress={dismiss} style={s.actionButton}>
+						<TouchableHighlight underlayColor={'transparent'} onPress={dismiss} style={s.dialogButton}>
 							<Text style={[s.buttonText, {color: 'black', fontWeight: null}]}>Cancel</Text>
 						</TouchableHighlight>
-						<TouchableHighlight underlayColor={'transparent'} onPress={submitText} style={[s.actionButton]}>
+						<TouchableHighlight underlayColor={'transparent'} onPress={submitText} style={[s.dialogButton]}>
 							<Text style={[s.buttonText, {color: 'black'}]}>Submit</Text>
 						</TouchableHighlight>
 					</View>

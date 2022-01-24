@@ -6,7 +6,6 @@ import formatTime from '../util/formattime';
 
 //maximum unit is in minutes (assumes will never need hours)
 const Timer = ({toggleTimer, active, elaspedTime}) => {
-
 	return (
 		<View style={s.timerContainer}>
 			<TouchableHighlight
