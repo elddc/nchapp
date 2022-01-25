@@ -36,7 +36,7 @@ const Separator = () => {
 }
 
 //full table
-const EventLog = ({events}) => {
+const EventLog = ({events, short}) => {
 	const list = useRef(false);
 	const count = useRef(0);
 
@@ -65,7 +65,7 @@ const EventLog = ({events}) => {
 			ItemSeparatorComponent={Separator}
 			stickyHeaderIndices={[0]}
 			directionalLockEnabled={true}
-			style={s.eventLog}
+			style={[s.eventLog, {marginBottom: short ? 2*em : null}]}
 			ref={list}
 		/>
 	);

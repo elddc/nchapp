@@ -32,11 +32,7 @@ const OptionInput = ({visible, submit, dismiss}) => {
 							style={s.textbox}
 							placeholder={'Type here'}
 						/>
-						<TouchableHighlight onPress={clearText} style={{
-							position: 'absolute',
-							top: .5*em,
-							right: .5*em,
-						}}>
+						<TouchableHighlight onPress={clearText} style={s.xButton}>
 						    <Feather name={'x'} size={1.5 * em} color={'black'} />
 						</TouchableHighlight>
 					</View>

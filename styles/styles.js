@@ -56,7 +56,12 @@ let actionButton = {
 let dialogButton = {
 	...actionButton,
 	marginVertical: 0,
-}
+};
+let xButton = {
+	position: 'absolute',
+	top: .5*em,
+	right: .5*em,
+};
 let buttonText = {
 	...text,
 	fontWeight: 'bold',
@@ -111,12 +116,24 @@ let headerCell = {
 	fontWeight: 'bold',
 };
 let eventLog = {
-	marginVertical: 1.2*em,
+	marginVertical: 1*em,
 };
 let help = {
 	position: 'absolute',
-	bottom: 2*em,
-	right: 2*em,
+	bottom: .5*em,
+	right: .5*em,
+};
+let metronome = {
+	position: 'absolute',
+	bottom: .5*em,
+	left: .5*em,
+}
+let metronomeRow = {
+	...row,
+	width: 70*vw,
+	position: 'absolute',
+	bottom: .5*em,
+	left: 4*em,
 };
 let overlay = {
 	height: '100%',
@@ -199,11 +216,12 @@ Dimensions.addEventListener('change', ({window}) => {
 
 const styles = {
 	center, text, row, tableRow, wrapRow,
-	button, buttonText, actionButton, dialogButton,
+	button, buttonText, actionButton, dialogButton, xButton,
 	container, main, fullscreen,
 	timerContainer, timer, timerText,
 	cell, headerCell, eventLog,
-	help, overlay, modal, modalText,
+	help, metronome, metronomeRow,
+	overlay, modal, modalText,
 	option, optionText, header, headerText,
 	textbox, textboxContainer,
 	hidden,
