@@ -22,7 +22,7 @@ const App = () => {
 
 	//metronome
 	const [player, setPlayer] = useState(false); //plays metronome sound
-	const [metronomeActive, setMetronomeActive] = useState(false); //whether timer is active
+	const [metronomeActive, setMetronomeActive] = useState(false); //whether metronome is active
 	const [bpm, setBpm] = useState(100); //beats per minute
 
 	//display
@@ -47,12 +47,13 @@ const App = () => {
 	const [displayHelp, setDisplayHelp] = useState(false); //visibility of help modal
 	const [displayMetronome, setDisplayMetronome] = useState(false); //visibility of metronome bar
 
-	//run timer
+	//run timer interval
 	useEffect(() => {
 		if (timerActive) {
 			let time = new Date();
 			setStartTime(time);
 			setTimeInterval(setInterval(() => {
+				//get accurate time elapsed by comparing to start time
 				setElapsedTime(Math.floor((Date.now() - time) / 1000));
 			}, 250));
 		}
@@ -64,6 +65,7 @@ const App = () => {
 		return () => clearInterval(timeInterval);
 	}, [timerActive]);
 
+	//start/stop timer
 	const toggleTimer = (auto = false) => {
 		if (!timerActive) {
 			setTimerActive(true);
@@ -84,10 +86,10 @@ const App = () => {
 				[
 					{
 						text: 'No',
-						style: 'destructive',
 					},
 					{
 						text: 'Yes',
+						style: 'destructive',
 						onPress: () => {
 							setTimerActive(false);
 							logEvent('End');
@@ -100,42 +102,48 @@ const App = () => {
 	};
 
 	//add event to event log
-	//note: name is not always key in actions!
-	const logEvent = (name) => {
-		if (name.includes('CPR')) {
+	const logEvent = (name, clear = false) => {
+		if (name.includes('CPR')) { //name is not always key in actions!
+			//toggle CPR status
 			let prevActions = {...actions};
 			prevActions['CPR'] = {...actions.CPR, active: (actions.CPR.active < 1 ? 1 : 0)};
 			setActions(prevActions);
 		}
 		else if (name === 'End') {
+			//reset CPR status
 			let prevActions = {...actions};
 			prevActions['CPR'] = {...actions.CPR, active: -1};
 			setActions(prevActions);
 		}
 		else if (name === 'Other') {
+			//open text input
 			setDisplayInput(true);
 			return;
 		}
 		else if (actions[name] && actions[name].list) {
-			openOptionList(name);
+			//open list of options stored in actions
+			setDisplayOptions({name, options: actions[name].list});
 			return;
 		}
 
-		let previousEvents = (name === 'Start') ? [] : [...events];
-
-		if (!timerActive && name !== 'Start') {
-			toggleTimer();
-			previousEvents = [{name: 'Start', time: new Date()}];
+		let previousEvents;
+		if (name === 'Start') { //clear event log
+			previousEvents = [];
+		}
+		else if (!timerActive) { //start code
+			setTimerActive(true);
+			previousEvents = [{name: 'Start', time: new Date(), index: 0}];
+		}
+		else {
+			previousEvents = [...events];
 		}
 
+		//add new event to log
 		setEvents([...previousEvents, {
 			name: name,
 			time: new Date(),
+			index: previousEvents.length,
 		}]);
-	}
-
-	const openOptionList = (name) => {
-		setDisplayOptions({name, options: actions[name].list});
 	}
 
 	return (

@@ -16,7 +16,7 @@ const Header = () => {
 	);
 }
 
-//each item in table
+//items in table
 const Row = ({name, time}) => {
 	const startTime = useContext(TimeContext);
 
@@ -29,6 +29,7 @@ const Row = ({name, time}) => {
 	);
 }
 
+//line separator between items
 const Separator = () => {
 	return (
 		<View style={s.horiLine} />
@@ -37,20 +38,24 @@ const Separator = () => {
 
 //full table
 const EventLog = ({events, short}) => {
-	const list = useRef(false);
-	const count = useRef(0);
+	const list = useRef(false); //ref to FlatList
 
+	//automatically scroll to end of list after new item added
 	useEffect(() => {
 		const timeout = setTimeout(scrollToEnd, 50);
 		return () => clearTimeout(timeout);
 	}, [events]);
 
+	//scroll to last item
 	const scrollToEnd = () => {
 		if (list.current)
-			list.current.scrollToEnd();
+			list.current.scrollToIndex({
+				index: events[events.length - 1].index,
+				viewPosition: 1,
+			});
 	}
 
-	if (events.length < 1) {
+	if (events.length < 1) { //placeholder; useful for maintaining layout in landscape
 		return <ScrollView />;
 	}
 	return (
@@ -59,9 +64,8 @@ const EventLog = ({events, short}) => {
 			renderItem={({item}) => (
 				<Row name={item.name} time={item.time} />
 			)}
-			keyExtractor={item => count.current++}
+			keyExtractor={item => item.index}
 			ListHeaderComponent={Header}
-			ListFooterComponent={<View style={{height: 2.4*em}} />}
 			ItemSeparatorComponent={Separator}
 			stickyHeaderIndices={[0]}
 			directionalLockEnabled={true}
