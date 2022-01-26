@@ -1,5 +1,6 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState, useEffect} from 'react';
 import {Text, View, TouchableHighlight, StatusBar, Alert, Platform} from 'react-native';
+import {Audio} from 'expo-av';
 import {Feather} from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
@@ -46,6 +47,46 @@ const App = () => {
 	const [displayInput, setDisplayInput] = useState(false); //visibility of text input
 	const [displayHelp, setDisplayHelp] = useState(false); //visibility of help modal
 	const [displayMetronome, setDisplayMetronome] = useState(false); //visibility of metronome bar
+
+	//load metronome sound
+	useEffect(() => {
+		const sound = new Audio.Sound();
+		sound.loadAsync(
+			require('./assets/metronome.mp3')
+		).then(() => {
+			setPlayer(sound);
+		});
+
+		Audio.setAudioModeAsync({
+			playsInSilentModeIOS: true
+		});
+	}, []);
+
+	//set playbackspeed to match bpm
+	useEffect(() => {
+		if (player)
+			player.setRateAsync(bpm/100, true);
+	}, [bpm, player]);
+
+	//unload metronome sound
+	useEffect(() => {
+		return player
+			? () => {
+				player.unloadAsync();
+			}
+			: undefined;
+	}, [player]);
+
+	const toggleMetronome = () => {
+		if (metronomeActive) {
+			setMetronomeActive(false);
+			player.pauseAsync();
+		} else {
+			setMetronomeActive(true);
+			player.setIsLoopingAsync(true);
+			player.playAsync();
+		}
+	}
 
 	//run timer interval
 	useEffect(() => {
