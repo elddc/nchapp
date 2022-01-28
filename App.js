@@ -16,13 +16,13 @@ import ActionButtons from './components/actionbuttons';
 
 const App = () => {
 	//timer
-	const [startTime, setStartTime] = useState(); //timestamp
+	const [startTime, setStartTime] = useState(null); //timestamp
 	const [timerActive, setTimerActive] = useState(false); //whether timer is active
 	const [elaspedTime, setElapsedTime] = useState(0); //time elapsed in seconds
-	const [timeInterval, setTimeInterval] = useState(); //contains timer loop
+	const [timeInterval, setTimeInterval] = useState(null); //contains timer loop
 
 	//metronome
-	const [player, setPlayer] = useState(false); //plays metronome sound
+	const [player, setPlayer] = useState(null); //plays metronome sound
 	const [metronomeActive, setMetronomeActive] = useState(false); //whether metronome is active
 	const [bpm, setBpm] = useState(100); //beats per minute
 
@@ -62,13 +62,24 @@ const App = () => {
 		});
 	}, []);
 
-	//set playbackspeed to match bpm
+	//loop metronome sound and set playback speed to match bpm
 	useEffect(() => {
-		if (player)
-			player.setRateAsync(bpm/100, true);
+		if (player) {
+			player.setRateAsync(bpm / 100, true, Audio.PitchCorrectionQuality.Medium);
+			player.setIsLoopingAsync(true);
+		}
 	}, [bpm, player]);
 
-	//unload metronome sound
+	useEffect(() => {
+		if (player) {
+		  if (metronomeActive)
+			player.playAsync();
+		  else
+			player.pauseAsync();
+		}
+	}, [metronomeActive, player]);
+
+	//cleanup: unload metronome sound
 	useEffect(() => {
 		return player
 			? () => {
@@ -76,17 +87,6 @@ const App = () => {
 			}
 			: undefined;
 	}, [player]);
-
-	const toggleMetronome = () => {
-		if (metronomeActive) {
-			setMetronomeActive(false);
-			player.pauseAsync();
-		} else {
-			setMetronomeActive(true);
-			player.setIsLoopingAsync(true);
-			player.playAsync();
-		}
-	}
 
 	//run timer interval
 	useEffect(() => {
@@ -143,7 +143,7 @@ const App = () => {
 	};
 
 	//add event to event log
-	const logEvent = (name, clear = false) => {
+	const logEvent = (name) => {
 		if (name.includes('CPR')) { //name is not always key in actions!
 			//toggle CPR status
 			let prevActions = {...actions};
@@ -199,20 +199,26 @@ const App = () => {
 					<EventLog events={events} short={displayMetronome} />
 				</View>
 			</TimeContext.Provider>
-			<TouchableHighlight onPress={() => setDisplayHelp(!displayHelp)} style={[s.help, {display: displayMetronome ? 'none' : 'flex'}]}>
+			<TouchableHighlight onPress={() => setDisplayHelp(!displayHelp)} style={[s.help, {
+				display: displayMetronome ? 'none' : 'flex',
+				position: displayMetronome ? 'relative' : 'absolute',
+			}]}>
 				<Feather name={'help-circle'} size={1.8 * em} color={'white'} />
 			</TouchableHighlight>
 			<TouchableHighlight onPress={() => setDisplayMetronome(!displayMetronome)} style={s.metronome}>
 				<MaterialCommunityIcons name={'metronome'} size={1.8 * em} color={'white'} />
 			</TouchableHighlight>
-			<View style={[s.metronomeRow, {display: displayMetronome ? 'flex' : 'none'}]}>
+			<View style={[s.metronomeRow, {
+				display: displayMetronome ? 'flex' : 'none',
+				position: displayMetronome ? 'absolute' : 'relative',
+			}]}>
 				<TouchableHighlight onPress={() => setBpm(bpm + 4)}>
 					<Feather name={'plus'} size={1.8 * em} color={'white'} />
 				</TouchableHighlight>
 				<TouchableHighlight onPress={() => setMetronomeActive(!metronomeActive)}>
 					<Feather name={metronomeActive ? 'pause' : 'play'} size={1.8 * em} color={'white'}/>
 				</TouchableHighlight>
-				<TouchableHighlight onPress={() => setBpm(bpm + 4)}>
+				<TouchableHighlight onPress={() => setBpm(bpm - 4)}>
 					<Feather name={'minus'} size={1.8 * em} color={'white'} />
 				</TouchableHighlight>
 				<Text style={{color: 'white', fontSize: 1.4*em}}>{bpm} bpm</Text>
