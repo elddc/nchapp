@@ -32,7 +32,7 @@ const App = () => {
 		Shock: {color: '#e06924', timer: true, count: 0},
 		Epinephrine: {color: '#cca300', count: 0},
 		Medication: {color: '#898989', list: ['Vasopressin', 'Amiodarone', 'Lidocaine', 'Magnesium Sulfate', 'Other']},
-		Rhythm: {color: '#208552', list: ['VT', 'Pulseless VT', 'PEA', 'Asystole', 'Other']},
+		Rhythm: {color: '#208552', list: ['PEA', 'VT/vfib', 'Asystole']},
 		Event: {color: '#5548AB', list: [
 			'Oxygen', 'IV access', 'IO access', 'Advanced airway: Supraglottic airway',
 			'Advanced airway: Endotracheal intubation', 'Waveform capnography', 'OPA (oropharyngeal airway)',
@@ -83,7 +83,7 @@ const App = () => {
 	useEffect(() => {
 		return player
 			? () => {
-				player.unloadAsync();
+				player.pauseAsync();
 			}
 			: undefined;
 	}, [player]);

@@ -1,5 +1,5 @@
 import React from 'react';
-import {Dimensions, Platform} from 'react-native';
+import {Dimensions, Platform, StyleSheet} from 'react-native';
 //react-native StyleSheet does not offer improved performance or notable utility, replaced by JS objects
 
 //dynamic sizing
@@ -184,7 +184,7 @@ let headerText = {
 	marginLeft: .5*em,
 };
 let horiLine = {
-	borderBottomWidth: 1,
+	borderBottomWidth: StyleSheet.hairlineWidth,
 	borderColor: 'white',
 	width: 95*vw,
 	alignSelf: 'center',
@@ -192,7 +192,7 @@ let horiLine = {
 let textbox = {
 	...text,
 	color: 'black',
-	outlineStyle: (Platform.OS === 'web' ? 'none' : null),
+	//outlineStyle: (Platform.OS === 'web' ? 'none' : null),
 };
 let textboxContainer = {
 	padding: .5*em,

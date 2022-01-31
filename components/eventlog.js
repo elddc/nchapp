@@ -42,7 +42,7 @@ const EventLog = ({events, short}) => {
 
 	//automatically scroll to end of list after new item added
 	useEffect(() => {
-		const timeout = setTimeout(scrollToEnd, 50);
+		const timeout = setTimeout(scrollToEnd, 30);
 		return () => clearTimeout(timeout);
 	}, [events]);
 
@@ -69,6 +69,10 @@ const EventLog = ({events, short}) => {
 			ItemSeparatorComponent={Separator}
 			stickyHeaderIndices={[0]}
 			directionalLockEnabled={true}
+			onScrollToIndexFailed={() => { //last item not rendered
+				list.current.scrollToEnd();
+				setTimeout(scrollToEnd, 70);
+			}}
 			style={[s.eventLog, {marginBottom: short ? 2*em : null}]}
 			ref={list}
 		/>
