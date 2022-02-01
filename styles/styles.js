@@ -1,6 +1,5 @@
 import React from 'react';
 import {Dimensions, Platform, StyleSheet} from 'react-native';
-//react-native StyleSheet does not offer improved performance or notable utility, replaced by JS objects
 
 //dynamic sizing
 const metric = 'window'; //alternative: 'screen'
@@ -27,7 +26,6 @@ let row = {
 	justifyContent: 'space-between',
 	alignItems: 'center',
 	alignSelf: 'center',
-	width: (landscape ? null : 95*vw),
 };
 let tableRow = {
 	...row,
@@ -38,7 +36,6 @@ let wrapRow = {
 	...row,
 	...center,
 	flexWrap: 'wrap',
-	width: (landscape ? 55*vw : row.width),
 	marginTop: .2*em,
 };
 let button = {
@@ -59,8 +56,8 @@ let dialogButton = {
 };
 let xButton = {
 	position: 'absolute',
-	top: .5*em,
-	right: .5*em,
+	bottom: .4*em,
+	right: .4*em,
 };
 let buttonText = {
 	...text,
@@ -74,7 +71,6 @@ let container = {
 	paddingTop: 1.2*vh,
 };
 let main = {
-	flexDirection: (landscape ? 'row' : 'column'),
 	alignSelf: 'center',
 	padding: 2*vh,
 };
@@ -95,7 +91,6 @@ let timer = {
 	borderWidth: 4,
 	borderRadius: 2.2*em,
 	padding: .5*em,
-	width: (landscape ? 50*vw : 88*vw),
 };
 let timerText = {
 	...text,
@@ -172,7 +167,7 @@ let header = {
 	...row,
 	justifyContent: 'flex-start',
 	width: '100%',
-	paddingBottom: .8*em,
+	paddingVertical: .8*em,
 	borderBottomWidth: 2,
 	borderColor: 'white',
 	backgroundColor: 'black',
@@ -204,7 +199,7 @@ let textboxContainer = {
 };
 
 //doesn't cause re-render
-Dimensions.addEventListener('change', ({window}) => {
+/*Dimensions.addEventListener('change', ({window}) => {
 	vw = window.width / 100;
 	vh = window.height / 100;
 	landscape = (vw > vh);
@@ -212,7 +207,7 @@ Dimensions.addEventListener('change', ({window}) => {
 		[vw, vh] = [vh, vw];
 	}
 	console.log(landscape); //proves listener is firing
-});
+});*/
 
 const styles = {
 	center, text, row, tableRow, wrapRow,

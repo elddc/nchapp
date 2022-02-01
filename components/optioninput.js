@@ -32,11 +32,11 @@ const OptionInput = ({visible, submit, dismiss}) => {
 							style={s.textbox}
 							placeholder={'Type here'}
 						/>
-						<TouchableHighlight onPress={clearText} style={s.xButton}>
+						<TouchableHighlight onPress={clearText} underlayColor={'transparent'} style={s.xButton}>
 						    <Feather name={'x'} size={1.5 * em} color={'black'} />
 						</TouchableHighlight>
 					</View>
-					<View style={[s.row, {width: '100%'}]}>
+					<View style={{...s.row, width: '100%'}}>
 						<TouchableHighlight underlayColor={'transparent'} onPress={dismiss} style={s.dialogButton}>
 							<Text style={[s.buttonText, {color: 'black', fontWeight: null}]}>Cancel</Text>
 						</TouchableHighlight>

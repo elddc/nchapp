@@ -1,10 +1,13 @@
-import s from '../styles/styles';
+import React, {useContext} from 'react';
+import s, {vw} from '../styles/styles';
 import {Text, TouchableHighlight, View} from 'react-native';
-import React from 'react';
+import LandscapeContext from '../context/landscapecontext';
 
 const ActionButtons = ({actions, logEvent}) => {
+	const landscape = useContext(LandscapeContext)
+
 	return (
-		<View style={s.wrapRow}>
+		<View style={{...s.wrapRow, width: (landscape ? 55*vw : 95*vw)}}>
 			{Object.keys(actions).map((name) => {
 				const {color, active} = actions[name];
 
