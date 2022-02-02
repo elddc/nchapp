@@ -1,11 +1,14 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import {Text, View, TouchableHighlight} from 'react-native';
-import s, {landscape, vw} from '../styles/styles';
+import s, {vw} from '../styles/styles';
 
-import formatTime from '../util/formattime';
+import formatTime from '../../util/formattime';
+import LandscapeContext from '../context/landscapecontext';
 
 //maximum unit is in minutes (assumes will never need hours)
 const Timer = ({toggleTimer, active, elaspedTime}) => {
+	const landscape = useContext(LandscapeContext);
+
 	return (
 		<View style={s.timerContainer}>
 			<TouchableHighlight

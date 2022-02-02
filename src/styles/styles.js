@@ -40,9 +40,8 @@ let wrapRow = {
 };
 let button = {
 	...center,
-	minHeight: 2*vh,
 	margin: vh,
-	padding: 2.5*vw,
+	padding: 1.5*vh,
 	borderRadius: 5*vh,
 	alignSelf: 'center',
 };

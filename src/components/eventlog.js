@@ -3,7 +3,7 @@ import {View, Text, FlatList, ScrollView} from 'react-native';
 
 import s, {em} from '../styles/styles';
 import TimeContext from '../context/timecontext';
-import {formatMilliseconds} from '../util/formattime';
+import {formatMilliseconds} from '../../util/formattime';
 
 //table header
 const Header = () => {

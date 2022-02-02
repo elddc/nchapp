@@ -1,10 +1,10 @@
 import React, {useContext} from 'react';
-import s, {vw} from '../styles/styles';
 import {Text, TouchableHighlight, View} from 'react-native';
+import s, {vw} from '../styles/styles';
 import LandscapeContext from '../context/landscapecontext';
 
 const ActionButtons = ({actions, logEvent}) => {
-	const landscape = useContext(LandscapeContext)
+	const landscape = useContext(LandscapeContext);
 
 	return (
 		<View style={{...s.wrapRow, width: (landscape ? 55*vw : 95*vw)}}>
