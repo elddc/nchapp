@@ -1,12 +1,11 @@
-import React, {useState, useEffect} from 'react';
-import {Text, View, TouchableHighlight, StatusBar, Alert, Platform, useWindowDimensions} from 'react-native';
+import React, {useState, useEffect, useContext} from 'react';
+import {Text, View, TouchableHighlight, StatusBar, Alert, Platform} from 'react-native';
 import {Audio} from 'expo-av';
 import {Feather} from '@expo/vector-icons';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 
-import s, {em, vh} from './styles/styles';
 import TimeContext from './context/timecontext';
-import LandscapeContext from './context/landscapecontext';
+import StyleContext from './context/stylecontext';
 
 import Timer from './components/timer';
 import EventLog from './components/eventlog';
@@ -14,8 +13,9 @@ import OptionList from './components/optionlist';
 import OptionInput from './components/optioninput';
 import Help from './components/help';
 import ActionButtons from './components/actionbuttons';
-
 const Main = () => {
+    const {landscape, em, vh, ...s} = useContext(StyleContext);
+
     //timer
     const [startTime, setStartTime] = useState(null); //timestamp
     const [timerActive, setTimerActive] = useState(false); //whether timer is active
@@ -48,14 +48,6 @@ const Main = () => {
     const [displayInput, setDisplayInput] = useState(false); //visibility of text input
     const [displayHelp, setDisplayHelp] = useState(false); //visibility of help modal
     const [displayMetronome, setDisplayMetronome] = useState(false); //visibility of metronome bar
-
-    //landscape
-    const [landscape, setLandscape] = useState(false);
-    const {height: vh, width: vw} = useWindowDimensions();
-
-    useEffect(() => {
-        setLandscape(vw > vh);
-    }, [vh])
 
     //load metronome sound
     useEffect(() => {
@@ -196,58 +188,61 @@ const Main = () => {
         }]);
     }
 
+    if (!s) {
+        console.log('initializing')
+        return <View style={{flex: 1, backgroundColor: 'black'}}/>
+    }
+
     return (
         <View style={s.container}>
-            <LandscapeContext.Provider value={landscape}>
-                <StatusBar barStyle={'light-content'} />
+            <StatusBar barStyle={'light-content'} />
 
-                <TimeContext.Provider value={startTime}>
-                    <View style={{...s.main, flexDirection: (landscape ? 'row' : 'column')}}>
-                        <View style={{marginRight: landscape ? 2*vh/100 : null}}>
-                            <Timer active={timerActive} toggleTimer={toggleTimer} elaspedTime={elaspedTime} />
-                            <ActionButtons actions={actions} logEvent={logEvent} />
-                        </View>
-                        <EventLog events={events} short={displayMetronome} />
+            <TimeContext.Provider value={startTime}>
+                <View style={s.main}>
+                    <View style={{marginRight: landscape ? 2*vh/100 : null}}>
+                        <Timer active={timerActive} toggleTimer={toggleTimer} elaspedTime={elaspedTime} />
+                        <ActionButtons actions={actions} logEvent={logEvent} />
                     </View>
-                </TimeContext.Provider>
-
-                <TouchableHighlight onPress={() => setDisplayHelp(!displayHelp)} style={[s.help, {
-                    display: displayMetronome ? 'none' : 'flex',
-                    position: displayMetronome ? 'relative' : 'absolute',
-                }]}>
-                    <Feather name={'help-circle'} size={1.8 * em} color={'white'} />
-                </TouchableHighlight>
-
-                <TouchableHighlight onPress={() => setDisplayMetronome(!displayMetronome)} style={s.metronome}>
-                    <MaterialCommunityIcons name={'metronome'} size={1.8 * em} color={'white'} />
-                </TouchableHighlight>
-                <View style={[s.metronomeRow, {
-                    display: displayMetronome ? 'flex' : 'none',
-                    position: displayMetronome ? 'absolute' : 'relative',
-                }]}>
-                    <TouchableHighlight onPress={() => setBpm(bpm + 4)}>
-                        <Feather name={'plus'} size={1.8 * em} color={'white'} />
-                    </TouchableHighlight>
-                    <TouchableHighlight onPress={() => setMetronomeActive(!metronomeActive)}>
-                        <Feather name={metronomeActive ? 'pause' : 'play'} size={1.8 * em} color={'white'}/>
-                    </TouchableHighlight>
-                    <TouchableHighlight onPress={() => setBpm(bpm - 4)}>
-                        <Feather name={'minus'} size={1.8 * em} color={'white'} />
-                    </TouchableHighlight>
-                    <Text style={{color: 'white', fontSize: 1.4*em}}>{bpm} bpm</Text>
+                    <EventLog events={events} short={displayMetronome} />
                 </View>
+            </TimeContext.Provider>
 
-                <OptionList
-                    title={displayOptions.name}
-                    options={displayOptions.options}
-                    visible={displayOptions}
-                    dismiss={() => setDisplayOptions(false)}
-                    select={logEvent}
-                />
-                <OptionInput visible={displayInput} submit={logEvent} dismiss={() => setDisplayInput(false)} />
+            <TouchableHighlight onPress={() => setDisplayHelp(!displayHelp)} style={[s.help, {
+                display: displayMetronome ? 'none' : 'flex',
+                position: displayMetronome ? 'relative' : 'absolute',
+            }]}>
+                <Feather name={'help-circle'} size={1.8 * em} color={'white'} />
+            </TouchableHighlight>
 
-                <Help visible={displayHelp} dismiss={() => {setDisplayHelp(false)}} />
-            </LandscapeContext.Provider>
+            <TouchableHighlight onPress={() => setDisplayMetronome(!displayMetronome)} style={s.metronome}>
+                <MaterialCommunityIcons name={'metronome'} size={1.8 * em} color={'white'} />
+            </TouchableHighlight>
+            <View style={[s.metronomeRow, {
+                display: displayMetronome ? 'flex' : 'none',
+                position: displayMetronome ? 'absolute' : 'relative',
+            }]}>
+                <TouchableHighlight onPress={() => setBpm(bpm + 4)}>
+                    <Feather name={'plus'} size={1.8 * em} color={'white'} />
+                </TouchableHighlight>
+                <TouchableHighlight onPress={() => setMetronomeActive(!metronomeActive)}>
+                    <Feather name={metronomeActive ? 'pause' : 'play'} size={1.8 * em} color={'white'}/>
+                </TouchableHighlight>
+                <TouchableHighlight onPress={() => setBpm(bpm - 4)}>
+                    <Feather name={'minus'} size={1.8 * em} color={'white'} />
+                </TouchableHighlight>
+                <Text style={{color: 'white', fontSize: 1.4*em}}>{bpm} bpm</Text>
+            </View>
+
+            <OptionList
+                title={displayOptions.name}
+                options={displayOptions.options}
+                visible={displayOptions}
+                dismiss={() => setDisplayOptions(false)}
+                select={logEvent}
+            />
+            <OptionInput visible={displayInput} submit={logEvent} dismiss={() => setDisplayInput(false)} />
+
+            <Help visible={displayHelp} dismiss={() => {setDisplayHelp(false)}} />
         </View>
     );
 }

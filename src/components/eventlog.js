@@ -1,12 +1,14 @@
 import React, {useContext, useEffect, useRef} from 'react';
 import {View, Text, FlatList, ScrollView} from 'react-native';
 
-import s, {em} from '../styles/styles';
+import StyleContext from '../context/stylecontext';
 import TimeContext from '../context/timecontext';
 import {formatMilliseconds} from '../../util/formattime';
 
 //table header
 const Header = () => {
+	const s = useContext(StyleContext);
+
 	return (
 		<View style={[s.tableRow]} key={0}>
 			<Text style={s.headerCell}>Event</Text>
@@ -18,6 +20,7 @@ const Header = () => {
 
 //items in table
 const Row = ({name, time}) => {
+	const s = useContext(StyleContext);
 	const startTime = useContext(TimeContext);
 
 	return (
@@ -31,6 +34,8 @@ const Row = ({name, time}) => {
 
 //line separator between items
 const Separator = () => {
+	const s = useContext(StyleContext);
+
 	return (
 		<View style={s.horiLine} />
 	)
@@ -38,6 +43,7 @@ const Separator = () => {
 
 //full table
 const EventLog = ({events, short}) => {
+	const {em, ...s} = useContext(StyleContext);
 	const list = useRef(false); //ref to FlatList
 
 	//automatically scroll to end of list after new item added

@@ -1,10 +1,12 @@
-import React, {useState} from 'react';
+import React, {useState, useContext} from 'react';
 import {View, Text, TextInput, TouchableHighlight} from 'react-native';
 import {Feather} from '@expo/vector-icons';
-import s, {em} from '../styles/styles';
+
+import StyleContext from '../context/stylecontext';
 import Popup from './popup';
 
 const OptionInput = ({visible, submit, dismiss}) => {
+	const {em, ...s} = useContext(StyleContext);
 	const [text, setText] = useState('');
 
 	//send text to event log and close popup

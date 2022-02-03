@@ -1,9 +1,12 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import {Text} from 'react-native';
-import s from '../styles/styles';
+
+import StyleContext from '../context/stylecontext';
 import Popup from './popup'
 
 const Help = ({visible, dismiss}) => {
+	const s = useContext(StyleContext);
+
 	return (
 		<Popup
 			visible={visible}

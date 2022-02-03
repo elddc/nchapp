@@ -1,8 +1,10 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useContext} from 'react';
 import {TouchableHighlight, Modal, Keyboard} from 'react-native';
-import s, {em} from '../styles/styles';
+
+import StyleContext from '../context/stylecontext';
 
 const Popup = ({visible, dismiss, content}) => {
+	const {em, ...s} = useContext(StyleContext);
 	const [keyboardActive, setKeyboardActive] = useState(false);
 
 	useEffect(() => {

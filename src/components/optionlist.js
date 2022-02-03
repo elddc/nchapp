@@ -1,9 +1,12 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import {Text, View, TouchableHighlight, FlatList} from 'react-native';
-import s, {em} from '../styles/styles';
 import {Feather} from "@expo/vector-icons";
 
+import StyleContext from '../context/stylecontext';
+
 const Option = ({name, select}) => {
+	const s = useContext(StyleContext);
+
 	return (
 		<TouchableHighlight style={s.option} onPress={select}>
 			<Text style={s.optionText}>{name}</Text>
@@ -12,6 +15,8 @@ const Option = ({name, select}) => {
 }
 
 const OptionList = ({title, options, visible, dismiss, select}) => {
+	const {em, ...s} = useContext(StyleContext);
+
 	return (
 		<View style={visible ? s.fullscreen : s.hidden}>
 			<FlatList

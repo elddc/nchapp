@@ -1,13 +1,13 @@
 import React, {useContext} from 'react';
 import {Text, View, TouchableHighlight} from 'react-native';
-import s, {vw} from '../styles/styles';
+
+import StyleContext from '../context/stylecontext';
 
 import formatTime from '../../util/formattime';
-import LandscapeContext from '../context/landscapecontext';
 
 //maximum unit is in minutes (assumes will never need hours)
 const Timer = ({toggleTimer, active, elaspedTime}) => {
-	const landscape = useContext(LandscapeContext);
+	const s = useContext(StyleContext);
 
 	return (
 		<View style={s.timerContainer}>
@@ -17,7 +17,6 @@ const Timer = ({toggleTimer, active, elaspedTime}) => {
 				style={{
 					...s.timer,
 					borderColor: (active ? '#de1245' : 'white'),
-					width: (landscape ? 50*vw : 88*vw),
 			}}
 			>
 				<Text style={s.timerText}>

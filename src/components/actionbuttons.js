@@ -1,13 +1,13 @@
 import React, {useContext} from 'react';
 import {Text, TouchableHighlight, View} from 'react-native';
-import s, {vw} from '../styles/styles';
-import LandscapeContext from '../context/landscapecontext';
+
+import StyleContext from '../context/stylecontext';
 
 const ActionButtons = ({actions, logEvent}) => {
-	const landscape = useContext(LandscapeContext);
+	const s = useContext(StyleContext);
 
 	return (
-		<View style={{...s.wrapRow, width: (landscape ? 55*vw : 95*vw)}}>
+		<View style={s.wrapRow}>
 			{Object.keys(actions).map((name) => {
 				const {color, active} = actions[name];
 
@@ -25,7 +25,7 @@ const ActionButtons = ({actions, logEvent}) => {
 
 				return (
 					<TouchableHighlight
-						style={[s.actionButton, {backgroundColor: (active > 0) ? '#268f99' : color}]}
+						style={{...s.actionButton, backgroundColor: (active > 0) ? '#268f99' : color}}
 						onPress={() => logEvent(name)}
 						key={name}
 					>
