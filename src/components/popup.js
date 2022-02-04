@@ -4,7 +4,7 @@ import {TouchableHighlight, Modal, Keyboard} from 'react-native';
 import StyleContext from '../context/stylecontext';
 
 const Popup = ({visible, dismiss, content}) => {
-	const {em, ...s} = useContext(StyleContext);
+	const {em, overlay, modal} = useContext(StyleContext);
 	const [keyboardActive, setKeyboardActive] = useState(false);
 
 	useEffect(() => {
@@ -30,8 +30,8 @@ const Popup = ({visible, dismiss, content}) => {
 			statusBarTranslucent={true}
 			supportedOrientations={['portrait', 'landscape']}
 		>
-			<TouchableHighlight onPress={dismiss} style={s.overlay} underlayColor={'transparent'}>
-				<TouchableHighlight style={[s.modal, {marginBottom: keyboardActive ? 10*em : 0}]}>
+			<TouchableHighlight onPress={dismiss} style={overlay} underlayColor={'transparent'}>
+				<TouchableHighlight style={[modal, {marginBottom: keyboardActive ? 15*em : 0}]}>
 					{content}
 				</TouchableHighlight>
 			</TouchableHighlight>

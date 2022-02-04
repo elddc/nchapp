@@ -5,20 +5,20 @@ import {Feather} from "@expo/vector-icons";
 import StyleContext from '../context/stylecontext';
 
 const Option = ({name, select}) => {
-	const s = useContext(StyleContext);
+	const {option, optionText} = useContext(StyleContext);
 
 	return (
-		<TouchableHighlight style={s.option} onPress={select}>
-			<Text style={s.optionText}>{name}</Text>
+		<TouchableHighlight style={option} onPress={select}>
+			<Text style={optionText}>{name}</Text>
 		</TouchableHighlight>
 	)
 }
 
 const OptionList = ({title, options, visible, dismiss, select}) => {
-	const {em, ...s} = useContext(StyleContext);
+	const {em, fullscreen, hidden, header, headerText} = useContext(StyleContext);
 
 	return (
-		<View style={visible ? s.fullscreen : s.hidden}>
+		<View style={visible ? fullscreen : hidden}>
 			<FlatList
 				style={{width: '100%'}}
 				data={options}
@@ -28,9 +28,9 @@ const OptionList = ({title, options, visible, dismiss, select}) => {
 				keyExtractor={(name) => name}
 				ListHeaderComponent={
 					<TouchableHighlight onPress={dismiss}>
-					    <View style={s.header}>
+					    <View style={header}>
 					        <Feather name={'chevron-left'} size={2 * em} color={'white'} />
-    						<Text style={s.headerText}>{title}</Text>
+    						<Text style={headerText}>{title}</Text>
 					    </View>
 					</TouchableHighlight>
 				}

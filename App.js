@@ -16,6 +16,9 @@ const App = () => {
 		if (landscape) //swaps dimensions in landscape
 			[vw, vh] = [vh, vw];
 
+		console.log('vw: ' + vw)
+		console.log('vh: ' + vh)
+
 		const center = {
 			justifyContent: 'center',
 			alignItems: 'center',
@@ -41,20 +44,20 @@ const App = () => {
 			...row,
 			...center,
 			flexWrap: 'wrap',
-			width: (landscape ? 55*vw : row.width),
+			width: (landscape ? 55*vw : 95*vw),
 			marginTop: .2*em,
 		};
 		const button = {
 			...center,
 			minHeight: 2*vh,
-			margin: vh,
+			margin: 1.2*vw,
 			padding: 2.5*vw,
 			borderRadius: 5*vh,
 			alignSelf: 'center',
 		};
 		const actionButton = {
 			...button,
-			flexBasis: '45%',
+			width: '45%'
 		};
 		const dialogButton = {
 			...actionButton,
@@ -62,8 +65,8 @@ const App = () => {
 		};
 		const xButton = {
 			position: 'absolute',
-			top: .5*em,
-			right: .5*em,
+			top: .4*em,
+			right: .4*em,
 		};
 		const buttonText = {
 			...text,
@@ -119,7 +122,7 @@ const App = () => {
 			fontWeight: 'bold',
 		};
 		const eventLog = {
-			marginVertical: 1*em,
+			marginVertical: em,
 		};
 		const help = {
 			position: 'absolute',
@@ -130,13 +133,13 @@ const App = () => {
 			position: 'absolute',
 			bottom: .5*em,
 			left: .5*em,
-		}
+		};
 		const metronomeRow = {
 			...row,
-			width: 70*vw,
+			width: 80*vw - 5*em,
 			position: 'absolute',
 			bottom: .5*em,
-			left: 4*em,
+			marginHorizontal: 'auto',
 		};
 		const overlay = {
 			height: '100%',
@@ -166,7 +169,7 @@ const App = () => {
 			width: '100%',
 			borderBottomWidth: 2,
 			borderColor: 'white',
-		}
+		};
 		const optionText = {
 			...text,
 			fontSize: 1.5*em,
@@ -175,7 +178,7 @@ const App = () => {
 			...row,
 			justifyContent: 'flex-start',
 			width: '100%',
-			paddingBottom: .8*em,
+			paddingVertical: .8*em,
 			borderBottomWidth: 2,
 			borderColor: 'white',
 			backgroundColor: 'black',

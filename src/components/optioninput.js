@@ -6,7 +6,7 @@ import StyleContext from '../context/stylecontext';
 import Popup from './popup';
 
 const OptionInput = ({visible, submit, dismiss}) => {
-	const {em, ...s} = useContext(StyleContext);
+	const {em, textboxContainer, textbox, buttonText, xButton, dialogButton, row} = useContext(StyleContext);
 	const [text, setText] = useState('');
 
 	//send text to event log and close popup
@@ -26,24 +26,24 @@ const OptionInput = ({visible, submit, dismiss}) => {
 			dismiss={dismiss}
 			content={
 				<View>
-					<View style={s.textboxContainer}>
+					<View style={textboxContainer}>
 						<TextInput
 							value={text}
 							onChangeText={setText}
 							onSubmitEditing={submitText}
-							style={s.textbox}
+							style={textbox}
 							placeholder={'Type here'}
 						/>
-						<TouchableHighlight onPress={clearText} underlayColor={'transparent'} style={s.xButton}>
+						<TouchableHighlight onPress={clearText} underlayColor={'transparent'} style={xButton}>
 						    <Feather name={'x'} size={1.5 * em} color={'black'} />
 						</TouchableHighlight>
 					</View>
-					<View style={{...s.row, width: '100%'}}>
-						<TouchableHighlight underlayColor={'transparent'} onPress={dismiss} style={s.dialogButton}>
-							<Text style={[s.buttonText, {color: 'black', fontWeight: null}]}>Cancel</Text>
+					<View style={{...row, width: '100%'}}>
+						<TouchableHighlight underlayColor={'transparent'} onPress={dismiss} style={dialogButton}>
+							<Text style={[buttonText, {color: 'black', fontWeight: null}]}>Cancel</Text>
 						</TouchableHighlight>
-						<TouchableHighlight underlayColor={'transparent'} onPress={submitText} style={[s.dialogButton]}>
-							<Text style={[s.buttonText, {color: 'black'}]}>Submit</Text>
+						<TouchableHighlight underlayColor={'transparent'} onPress={submitText} style={[dialogButton]}>
+							<Text style={[buttonText, {color: 'black'}]}>Submit</Text>
 						</TouchableHighlight>
 					</View>
 				</View>

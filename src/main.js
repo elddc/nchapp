@@ -14,6 +14,7 @@ import OptionInput from './components/optioninput';
 import Help from './components/help';
 import ActionButtons from './components/actionbuttons';
 const Main = () => {
+    //styles
     const {landscape, em, vh, ...s} = useContext(StyleContext);
 
     //timer
@@ -199,7 +200,7 @@ const Main = () => {
 
             <TimeContext.Provider value={startTime}>
                 <View style={s.main}>
-                    <View style={{marginRight: landscape ? 2*vh/100 : null}}>
+                    <View style={{marginRight: landscape ? 2*vh : null}}>
                         <Timer active={timerActive} toggleTimer={toggleTimer} elaspedTime={elaspedTime} />
                         <ActionButtons actions={actions} logEvent={logEvent} />
                     </View>
@@ -207,28 +208,25 @@ const Main = () => {
                 </View>
             </TimeContext.Provider>
 
-            <TouchableHighlight onPress={() => setDisplayHelp(!displayHelp)} style={[s.help, {
-                display: displayMetronome ? 'none' : 'flex',
-                position: displayMetronome ? 'relative' : 'absolute',
-            }]}>
-                <Feather name={'help-circle'} size={1.8 * em} color={'white'} />
+            <TouchableHighlight onPress={() => setDisplayHelp(!displayHelp)} style={s.help}>
+                <Feather name={'help-circle'} size={1.8*em} color={'white'} />
             </TouchableHighlight>
 
             <TouchableHighlight onPress={() => setDisplayMetronome(!displayMetronome)} style={s.metronome}>
-                <MaterialCommunityIcons name={'metronome'} size={1.8 * em} color={'white'} />
+                <MaterialCommunityIcons name={'metronome'} size={1.8*em} color={'white'} />
             </TouchableHighlight>
             <View style={[s.metronomeRow, {
                 display: displayMetronome ? 'flex' : 'none',
                 position: displayMetronome ? 'absolute' : 'relative',
             }]}>
                 <TouchableHighlight onPress={() => setBpm(bpm + 4)}>
-                    <Feather name={'plus'} size={1.8 * em} color={'white'} />
+                    <Feather name={'plus'} size={1.8*em} color={'white'} />
                 </TouchableHighlight>
                 <TouchableHighlight onPress={() => setMetronomeActive(!metronomeActive)}>
-                    <Feather name={metronomeActive ? 'pause' : 'play'} size={1.8 * em} color={'white'}/>
+                    <Feather name={metronomeActive ? 'pause' : 'play'} size={1.8*em} color={'white'}/>
                 </TouchableHighlight>
                 <TouchableHighlight onPress={() => setBpm(bpm - 4)}>
-                    <Feather name={'minus'} size={1.8 * em} color={'white'} />
+                    <Feather name={'minus'} size={1.8*em} color={'white'} />
                 </TouchableHighlight>
                 <Text style={{color: 'white', fontSize: 1.4*em}}>{bpm} bpm</Text>
             </View>

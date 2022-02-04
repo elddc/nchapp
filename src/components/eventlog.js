@@ -7,43 +7,43 @@ import {formatMilliseconds} from '../../util/formattime';
 
 //table header
 const Header = () => {
-	const s = useContext(StyleContext);
+	const {tableRow, headerCell} = useContext(StyleContext);
 
 	return (
-		<View style={[s.tableRow]} key={0}>
-			<Text style={s.headerCell}>Event</Text>
-			<Text style={s.headerCell}>Elapsed</Text>
-			<Text style={s.headerCell}>Time</Text>
+		<View style={tableRow} key={0}>
+			<Text style={headerCell}>Event</Text>
+			<Text style={headerCell}>Elapsed</Text>
+			<Text style={headerCell}>Time</Text>
 		</View>
 	);
 }
 
 //items in table
 const Row = ({name, time}) => {
-	const s = useContext(StyleContext);
+	const {tableRow, cell} = useContext(StyleContext);
 	const startTime = useContext(TimeContext);
 
 	return (
-		<View style={s.tableRow}>
-			<Text style={s.cell}>{name}</Text>
-			<Text style={s.cell}>{formatMilliseconds(time - startTime)}</Text>
-			<Text style={s.cell}>{time.toTimeString().split(' ')[0]}</Text>
+		<View style={tableRow}>
+			<Text style={cell}>{name}</Text>
+			<Text style={cell}>{formatMilliseconds(time - startTime)}</Text>
+			<Text style={cell}>{time.toTimeString().split(' ')[0]}</Text>
 		</View>
 	);
 }
 
 //line separator between items
 const Separator = () => {
-	const s = useContext(StyleContext);
+	const {horiLine} = useContext(StyleContext);
 
 	return (
-		<View style={s.horiLine} />
+		<View style={horiLine} />
 	)
 }
 
 //full table
 const EventLog = ({events, short}) => {
-	const {em, ...s} = useContext(StyleContext);
+	const {em, eventLog} = useContext(StyleContext);
 	const list = useRef(false); //ref to FlatList
 
 	//automatically scroll to end of list after new item added
@@ -79,7 +79,7 @@ const EventLog = ({events, short}) => {
 				list.current.scrollToEnd();
 				setTimeout(scrollToEnd, 70);
 			}}
-			style={[s.eventLog, {marginBottom: short ? 2*em : null}]}
+			style={[eventLog, {marginBottom: short ? 2*em : null}]}
 			ref={list}
 		/>
 	);

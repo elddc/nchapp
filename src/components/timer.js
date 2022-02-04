@@ -7,19 +7,19 @@ import formatTime from '../../util/formattime';
 
 //maximum unit is in minutes (assumes will never need hours)
 const Timer = ({toggleTimer, active, elaspedTime}) => {
-	const s = useContext(StyleContext);
+	const {timer, timerContainer, timerText} = useContext(StyleContext);
 
 	return (
-		<View style={s.timerContainer}>
+		<View style={timerContainer}>
 			<TouchableHighlight
 				onPress={() => toggleTimer(false)}
 				onLongPress={() => toggleTimer(true)}
 				style={{
-					...s.timer,
+					...timer,
 					borderColor: (active ? '#de1245' : 'white'),
 			}}
 			>
-				<Text style={s.timerText}>
+				<Text style={timerText}>
 					{formatTime(elaspedTime)}
 				</Text>
 			</TouchableHighlight>

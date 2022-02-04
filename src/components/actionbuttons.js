@@ -4,10 +4,10 @@ import {Text, TouchableHighlight, View} from 'react-native';
 import StyleContext from '../context/stylecontext';
 
 const ActionButtons = ({actions, logEvent}) => {
-	const s = useContext(StyleContext);
+	const {wrapRow, actionButton, buttonText} = useContext(StyleContext);
 
 	return (
-		<View style={s.wrapRow}>
+		<View style={wrapRow}>
 			{Object.keys(actions).map((name) => {
 				const {color, active} = actions[name];
 
@@ -25,11 +25,11 @@ const ActionButtons = ({actions, logEvent}) => {
 
 				return (
 					<TouchableHighlight
-						style={{...s.actionButton, backgroundColor: (active > 0) ? '#268f99' : color}}
+						style={{...actionButton, backgroundColor: (active > 0) ? '#268f99' : color}}
 						onPress={() => logEvent(name)}
 						key={name}
 					>
-						<Text style={s.buttonText}>{name}</Text>
+						<Text style={buttonText}>{name}</Text>
 					</TouchableHighlight>
 				);
 			})}
