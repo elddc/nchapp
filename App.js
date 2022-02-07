@@ -1,24 +1,26 @@
 import React, {useState, useEffect} from 'react';
-import {useWindowDimensions, StyleSheet} from 'react-native';
+import {useWindowDimensions, StyleSheet, Platform} from 'react-native';
 import Main from './src/main';
 import StyleContext from './src/context/stylecontext';
 
+//houses styling
 const App = () => {
 	const [styles, setStyles] = useState({landscape: false, vw: 0, vh: 0, em: 0});
 	const dm = useWindowDimensions();
 
+	//generates styles when dimensions update
 	useEffect(() => {
+		//units, similar to CSS vw, vh, em
 		let vw = dm.width/100;
 		let vh = dm.height/100;
-		const landscape = vw > vh;
 		const em = 20;
 
+		//determine orientation and update dimensions as needed
+		const landscape = vw > vh;
 		if (landscape) //swaps dimensions in landscape
 			[vw, vh] = [vh, vw];
 
-		console.log('vw: ' + vw)
-		console.log('vh: ' + vh)
-
+		//style objects
 		const center = {
 			justifyContent: 'center',
 			alignItems: 'center',
@@ -195,11 +197,6 @@ const App = () => {
 			width: 95*vw,
 			alignSelf: 'center',
 		};
-		const textbox = {
-			...text,
-			color: 'black',
-			//outlineStyle: (Platform.OS === 'web' ? 'none' : null),
-		};
 		const textboxContainer = {
 			padding: .5*em,
 			marginTop: 2*vh,
@@ -208,6 +205,12 @@ const App = () => {
 			borderColor: 'black',
 			paddingRight: 2.5*em,
 		};
+		let textbox = {
+			...text,
+			color: 'black',
+		};
+		if (Platform.OS === 'web')
+			textbox.outlineStyle = 'none';
 
 		setStyles({
 			em, vw, vh, landscape,
@@ -219,12 +222,13 @@ const App = () => {
 			help, metronome, metronomeRow,
 			overlay, modal, modalText,
 			option, optionText, header, headerText,
-			textbox, textboxContainer,
+			textboxContainer, textbox,
 			hidden,
 			horiLine,
 		});
 	}, [dm])
 
+	//pass styles to context
 	return (
 		<StyleContext.Provider value={styles}>
 			<Main />

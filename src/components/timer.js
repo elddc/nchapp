@@ -5,7 +5,10 @@ import StyleContext from '../context/stylecontext';
 
 import formatTime from '../../util/formattime';
 
-//maximum unit is in minutes (assumes will never need hours)
+//timer display (MM:SS)
+//toggleTimer: onPress callback
+//active: whether timer is running (contols styling only)
+//elapsedTime: time in seconds to display
 const Timer = ({toggleTimer, active, elaspedTime}) => {
 	const {timer, timerContainer, timerText} = useContext(StyleContext);
 

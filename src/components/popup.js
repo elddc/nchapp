@@ -3,10 +3,15 @@ import {TouchableHighlight, Modal, Keyboard} from 'react-native';
 
 import StyleContext from '../context/stylecontext';
 
+//modal
+//visible: whether component should display
+//dismiss: function to hide component
+//content: inner part of component
 const Popup = ({visible, dismiss, content}) => {
 	const {em, overlay, modal} = useContext(StyleContext);
-	const [keyboardActive, setKeyboardActive] = useState(false);
+	const [keyboardActive, setKeyboardActive] = useState(false); //whether keyboard is open
 
+	//add keyboard listener
 	useEffect(() => {
 		const listeners = [
 			Keyboard.addListener('keyboardWillShow', () => {

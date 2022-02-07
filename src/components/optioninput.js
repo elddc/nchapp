@@ -5,9 +5,13 @@ import {Feather} from '@expo/vector-icons';
 import StyleContext from '../context/stylecontext';
 import Popup from './popup';
 
+//text input dialog
+//visible: whether component should display
+//submit: onPress callback
+//dismiss: function to hide component
 const OptionInput = ({visible, submit, dismiss}) => {
 	const {em, textboxContainer, textbox, buttonText, xButton, dialogButton, row} = useContext(StyleContext);
-	const [text, setText] = useState('');
+	const [text, setText] = useState(''); //user entered text
 
 	//send text to event log and close popup
 	const submitText = () => {

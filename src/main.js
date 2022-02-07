@@ -13,9 +13,11 @@ import OptionList from './components/optionlist';
 import OptionInput from './components/optioninput';
 import Help from './components/help';
 import ActionButtons from './components/actionbuttons';
+
+//core app
 const Main = () => {
     //styles
-    const {landscape, em, vh, ...s} = useContext(StyleContext);
+    const {landscape, em, vh, container, main, help, metronome, metronomeRow} = useContext(StyleContext);
 
     //timer
     const [startTime, setStartTime] = useState(null); //timestamp
@@ -30,9 +32,9 @@ const Main = () => {
 
     //display
     const [actions, setActions] = useState({ //data for input buttons
-        CPR: {color: '#114985', timer: true, active: -1}, //start, pause, restart
-        Shock: {color: '#e06924', timer: true, count: 0},
-        Epinephrine: {color: '#cca300', count: 0},
+        CPR: {color: '#114985', active: -1}, //(-1, 1): start, pause, restart
+        Shock: {color: '#e06924'},
+        Epinephrine: {color: '#cca300'},
         Medication: {color: '#898989', list: ['Vasopressin', 'Amiodarone', 'Lidocaine', 'Magnesium Sulfate', 'Other']},
         Rhythm: {color: '#208552', list: ['PEA', 'VT/vfib', 'Asystole']},
         Event: {color: '#5548AB', list: [
@@ -42,10 +44,9 @@ const Main = () => {
             ],},
         ROSC: {color: '#784124'},
         Other: {enterText: true},
-        //Metronome: {color: '#7c933e'},
     });
     const [events, setEvents] = useState([]); //list of events that have occurred
-    const [displayOptions, setDisplayOptions] = useState(false); //options to display in popup list
+    const [displayOptions, setDisplayOptions] = useState(false); //options to display in fullscreen popup list
     const [displayInput, setDisplayInput] = useState(false); //visibility of text input
     const [displayHelp, setDisplayHelp] = useState(false); //visibility of help modal
     const [displayMetronome, setDisplayMetronome] = useState(false); //visibility of metronome bar
@@ -72,6 +73,7 @@ const Main = () => {
         }
     }, [bpm, player]);
 
+    //toggle metronome sound
     useEffect(() => {
         if (player) {
             if (metronomeActive)
@@ -81,7 +83,7 @@ const Main = () => {
         }
     }, [metronomeActive, player]);
 
-    //cleanup: unload metronome sound
+    //cleanup
     useEffect(() => {
         return player
             ? () => {
@@ -90,11 +92,12 @@ const Main = () => {
             : undefined;
     }, [player]);
 
-    //run timer interval
+    //run timer
     useEffect(() => {
         if (timerActive) {
             let time = new Date();
             setStartTime(time);
+
             setTimeInterval(setInterval(() => {
                 //get accurate time elapsed by comparing to start time
                 setElapsedTime(Math.floor((Date.now() - time) / 1000));
@@ -102,7 +105,6 @@ const Main = () => {
         }
         else {
             clearInterval(timeInterval);
-            setTimeInterval(false);
         }
 
         return () => clearInterval(timeInterval);
@@ -114,7 +116,7 @@ const Main = () => {
             setTimerActive(true);
             logEvent('Start');
         }
-        else if (auto) {
+        else if (auto) { //skip confirm dialog
             setTimerActive(false);
             logEvent('End');
         }
@@ -125,7 +127,7 @@ const Main = () => {
         else {
             Alert.alert(
                 'Are you sure you want to end the timer?',
-                '',
+                'You cannot undo this action!',
                 [
                     {
                         text: 'No',
@@ -146,6 +148,7 @@ const Main = () => {
 
     //add event to event log
     const logEvent = (name) => {
+        //handle special events
         if (name.includes('CPR')) { //name is not always key in actions!
             //toggle CPR status
             let prevActions = {...actions};
@@ -169,6 +172,7 @@ const Main = () => {
             return;
         }
 
+        //get event log
         let previousEvents;
         if (name === 'Start') { //clear event log
             previousEvents = [];
@@ -185,21 +189,16 @@ const Main = () => {
         setEvents([...previousEvents, {
             name: name,
             time: new Date(),
-            index: previousEvents.length,
+            index: previousEvents.length, //used as key in flatlist
         }]);
     }
 
-    if (!s) {
-        console.log('initializing')
-        return <View style={{flex: 1, backgroundColor: 'black'}}/>
-    }
-
     return (
-        <View style={s.container}>
+        <View style={container}>
             <StatusBar barStyle={'light-content'} />
 
             <TimeContext.Provider value={startTime}>
-                <View style={s.main}>
+                <View style={main}>
                     <View style={{marginRight: landscape ? 2*vh : null}}>
                         <Timer active={timerActive} toggleTimer={toggleTimer} elaspedTime={elaspedTime} />
                         <ActionButtons actions={actions} logEvent={logEvent} />
@@ -208,17 +207,18 @@ const Main = () => {
                 </View>
             </TimeContext.Provider>
 
-            <TouchableHighlight onPress={() => setDisplayHelp(!displayHelp)} style={s.help}>
+            <TouchableHighlight onPress={() => setDisplayHelp(!displayHelp)} style={help}>
                 <Feather name={'help-circle'} size={1.8*em} color={'white'} />
             </TouchableHighlight>
 
-            <TouchableHighlight onPress={() => setDisplayMetronome(!displayMetronome)} style={s.metronome}>
+            <TouchableHighlight onPress={() => setDisplayMetronome(!displayMetronome)} style={metronome}>
                 <MaterialCommunityIcons name={'metronome'} size={1.8*em} color={'white'} />
             </TouchableHighlight>
-            <View style={[s.metronomeRow, {
+            <View style={{
+                ...metronomeRow,
                 display: displayMetronome ? 'flex' : 'none',
                 position: displayMetronome ? 'absolute' : 'relative',
-            }]}>
+            }}>
                 <TouchableHighlight onPress={() => setBpm(bpm + 4)}>
                     <Feather name={'plus'} size={1.8*em} color={'white'} />
                 </TouchableHighlight>

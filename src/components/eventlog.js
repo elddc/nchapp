@@ -19,6 +19,8 @@ const Header = () => {
 }
 
 //items in table
+//name: name to display
+//time: timestamp
 const Row = ({name, time}) => {
 	const {tableRow, cell} = useContext(StyleContext);
 	const startTime = useContext(TimeContext);
@@ -42,13 +44,15 @@ const Separator = () => {
 }
 
 //full table
+//events: data to display
+//short: whether to make list height smaller to accomodate other elements
 const EventLog = ({events, short}) => {
 	const {em, eventLog} = useContext(StyleContext);
 	const list = useRef(false); //ref to FlatList
 
-	//automatically scroll to end of list after new item added
+	//automatically scroll to end of list after new items added
 	useEffect(() => {
-		const timeout = setTimeout(scrollToEnd, 30);
+		const timeout = setTimeout(scrollToEnd, 30); //allow for render time
 		return () => clearTimeout(timeout);
 	}, [events]);
 
@@ -56,7 +60,7 @@ const EventLog = ({events, short}) => {
 	const scrollToEnd = () => {
 		if (list.current)
 			list.current.scrollToIndex({
-				index: events[events.length - 1].index,
+				index: events.length - 1, //same as key
 				viewPosition: 1,
 			});
 	}
@@ -75,7 +79,7 @@ const EventLog = ({events, short}) => {
 			ItemSeparatorComponent={Separator}
 			stickyHeaderIndices={[0]}
 			directionalLockEnabled={true}
-			onScrollToIndexFailed={() => { //last item not rendered
+			onScrollToIndexFailed={() => { //if last item not rendered
 				list.current.scrollToEnd();
 				setTimeout(scrollToEnd, 70);
 			}}
