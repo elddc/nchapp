@@ -1,5 +1,6 @@
 import React, {useState, useEffect, useContext} from 'react';
 import {Text, View, TouchableHighlight, StatusBar, Alert, Platform} from 'react-native';
+import {useKeepAwake} from 'expo-keep-awake';
 import {Audio} from 'expo-av';
 import {Feather} from '@expo/vector-icons';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
@@ -16,17 +17,20 @@ import ActionButtons from './components/actionbuttons';
 
 //core app
 const Main = () => {
+    //prevent device from sleeping
+    useKeepAwake();
+
     //styles
     const {landscape, em, vh, container, main, help, metronome, metronomeRow} = useContext(StyleContext);
 
     //timer
-    const [startTime, setStartTime] = useState(null); //timestamp
+    const [startTime, setStartTime] = useState(); //timestamp
     const [timerActive, setTimerActive] = useState(false); //whether timer is active
     const [elaspedTime, setElapsedTime] = useState(0); //time elapsed in seconds
-    const [timeInterval, setTimeInterval] = useState(null); //contains timer loop
+    const [timeInterval, setTimeInterval] = useState(); //contains timer loop
 
     //metronome
-    const [player, setPlayer] = useState(null); //plays metronome sound
+    const [player, setPlayer] = useState(); //plays metronome sound
     const [metronomeActive, setMetronomeActive] = useState(false); //whether metronome is active
     const [bpm, setBpm] = useState(100); //beats per minute
 
@@ -107,7 +111,7 @@ const Main = () => {
             clearInterval(timeInterval);
         }
 
-        return () => clearInterval(timeInterval);
+        return () => { clearInterval(timeInterval) }
     }, [timerActive]);
 
     //start/stop timer

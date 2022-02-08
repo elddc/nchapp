@@ -1,9 +1,11 @@
 {
   "expo": {
-    "name": "prototype",
-    "slug": "prototype",
+    "name": "Code Tracker",
+    "slug": "codeTracker",
     "version": "1.0.0",
     "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "primaryColor": "#000000",
     "icon": "./src/assets/favicon.png",
     "splash": {
       "image": "./src/assets/splash.png",
