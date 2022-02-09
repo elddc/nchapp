@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useRef} from 'react';
+import React, {useContext, useEffect, useRef, forwardRef} from 'react';
 import {View, Text, FlatList, ScrollView} from 'react-native';
 
 import StyleContext from '../context/stylecontext';
@@ -46,9 +46,8 @@ const Separator = () => {
 //full table
 //events: data to display
 //short: whether to make list height smaller to accomodate other elements
-const EventLog = ({events, short}) => {
+const EventLog = forwardRef(({events, short}, ref) => {
 	const {em, eventLog} = useContext(StyleContext);
-	const list = useRef(false); //ref to FlatList
 
 	//automatically scroll to end of list after new items added
 	useEffect(() => {
@@ -58,8 +57,8 @@ const EventLog = ({events, short}) => {
 
 	//scroll to last item
 	const scrollToEnd = () => {
-		if (list.current)
-			list.current.scrollToIndex({
+		if (ref.current)
+			ref.current.scrollToIndex({
 				index: events.length - 1, //same as key
 				viewPosition: 1,
 			});
@@ -84,9 +83,9 @@ const EventLog = ({events, short}) => {
 				setTimeout(scrollToEnd, 70);
 			}}
 			style={[eventLog, {marginBottom: short ? 2*em : null}]}
-			ref={list}
+			ref={ref}
 		/>
 	);
-}
+});
 
 export default EventLog;

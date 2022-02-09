@@ -126,12 +126,12 @@ const App = () => {
 		const eventLog = {
 			marginVertical: em,
 		};
-		const help = {
+		const bottomRight = {
 			position: 'absolute',
 			bottom: .5*em,
 			right: .5*em,
 		};
-		const metronome = {
+		const bottomLeft = {
 			position: 'absolute',
 			bottom: .5*em,
 			left: .5*em,
@@ -219,7 +219,7 @@ const App = () => {
 			container, main, fullscreen,
 			timerContainer, timer, timerText,
 			cell, headerCell, eventLog,
-			help, metronome, metronomeRow,
+			bottomLeft, metronomeRow, bottomRight,
 			overlay, modal, modalText,
 			option, optionText, header, headerText,
 			textboxContainer, textbox,

@@ -1,7 +1,9 @@
-import React, {useState, useEffect, useContext} from 'react';
+import React, {useState, useEffect, useContext, useRef} from 'react';
 import {Text, View, TouchableHighlight, StatusBar, Alert, Platform} from 'react-native';
+import {captureRef} from 'react-native-view-shot';
 import {useKeepAwake} from 'expo-keep-awake';
 import {Audio} from 'expo-av';
+import {saveToLibraryAsync} from 'expo-media-library';
 import {Feather} from '@expo/vector-icons';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 
@@ -14,6 +16,7 @@ import OptionList from './components/optionlist';
 import OptionInput from './components/optioninput';
 import Help from './components/help';
 import ActionButtons from './components/actionbuttons';
+import timer from "./components/timer";
 
 //core app
 const Main = () => {
@@ -21,7 +24,7 @@ const Main = () => {
     useKeepAwake();
 
     //styles
-    const {landscape, em, vh, container, main, help, metronome, metronomeRow} = useContext(StyleContext);
+    const {landscape, em, vh, container, main, bottomRight, bottomLeft, metronomeRow} = useContext(StyleContext);
 
     //timer
     const [startTime, setStartTime] = useState(); //timestamp
@@ -54,6 +57,9 @@ const Main = () => {
     const [displayInput, setDisplayInput] = useState(false); //visibility of text input
     const [displayHelp, setDisplayHelp] = useState(false); //visibility of help modal
     const [displayMetronome, setDisplayMetronome] = useState(false); //visibility of metronome bar
+
+    //ref of event log for screenshot purposes
+    const screenshotRef = useRef();
 
     //load metronome sound
     useEffect(() => {
@@ -197,6 +203,32 @@ const Main = () => {
         }]);
     }
 
+    const screenshotLog = () => {
+       try {
+            captureRef(screenshotRef).then(uri => {
+                saveToLibraryAsync(uri);
+            })
+        }
+        catch (err) {console.log(err)}
+    }
+
+    const conditionalStyles = (base, hide) => {
+        console.log(hide)
+        const visibility = hide
+            ? {display: 'none', position: 'relative'}
+            : {display: 'flex', position: 'absolute'}
+
+        return {...base, ...visibility};
+    }
+
+    /*
+
+            <TouchableHighlight onPress={screenshotLog} style={{...bottomLeft}}>
+                <Feather name={'download'} size={1.8*em} color={'white'} />
+            </TouchableHighlight>
+     */
+
+
     return (
         <View style={container}>
             <StatusBar barStyle={'light-content'} />
@@ -207,15 +239,27 @@ const Main = () => {
                         <Timer active={timerActive} toggleTimer={toggleTimer} elaspedTime={elaspedTime} />
                         <ActionButtons actions={actions} logEvent={logEvent} />
                     </View>
-                    <EventLog events={events} short={displayMetronome} />
+                    <EventLog ref={screenshotRef} events={events} short={displayMetronome} />
                 </View>
             </TimeContext.Provider>
 
-            <TouchableHighlight onPress={() => setDisplayHelp(!displayHelp)} style={help}>
+            <TouchableHighlight onPress={() => setDisplayHelp(!displayHelp)} style={bottomRight}>
                 <Feather name={'help-circle'} size={1.8*em} color={'white'} />
             </TouchableHighlight>
 
-            <TouchableHighlight onPress={() => setDisplayMetronome(!displayMetronome)} style={metronome}>
+            <TouchableHighlight onPress={screenshotLog} style={{
+                ...bottomLeft,
+                display: (timerActive && events.length < 1) ? 'none' : 'flex',
+                position: (timerActive && events.length < 1) ? 'relative' : 'abolute',
+            }}>
+                <Feather name={'download'} size={1.8*em} color={'white'} />
+            </TouchableHighlight>
+
+            <TouchableHighlight onPress={() => setDisplayMetronome(!displayMetronome)} style={{
+                ...bottomLeft,
+                display: (timerActive && events.length < 1) ? 'flex' : 'none',
+                position: (timerActive && events.length < 1) ? 'absolute' : 'relative',
+            }}>
                 <MaterialCommunityIcons name={'metronome'} size={1.8*em} color={'white'} />
             </TouchableHighlight>
             <View style={{
