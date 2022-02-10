@@ -1,5 +1,6 @@
-import React, {useState, useEffect, useContext, useRef} from 'react';
+import React, {useState, useEffect, useContext, useRef, useCallback} from 'react';
 import {Text, View, TouchableHighlight, StatusBar, Alert, Platform} from 'react-native';
+import {debounce} from 'debounce';
 import {captureRef} from 'react-native-view-shot';
 import {useKeepAwake} from 'expo-keep-awake';
 import {Audio} from 'expo-av';
@@ -16,7 +17,6 @@ import OptionList from './components/optionlist';
 import OptionInput from './components/optioninput';
 import Help from './components/help';
 import ActionButtons from './components/actionbuttons';
-import timer from "./components/timer";
 
 //core app
 const Main = () => {
@@ -63,10 +63,11 @@ const Main = () => {
 
     //load metronome sound
     useEffect(() => {
-        const sound = new Audio.Sound();
-        sound.loadAsync(
-            require('./assets/metronome.mp3')
-        ).then(() => {
+        Audio.Sound.createAsync(require('./assets/metronome.mp3'), {
+            isLooping: true,
+            shouldCorrectPitch: true,
+            pitchCorrectionQuality: Audio.PitchCorrectionQuality.Medium,
+        }).then(({sound}) => {
             setPlayer(sound);
         });
 
@@ -74,14 +75,6 @@ const Main = () => {
             playsInSilentModeIOS: true
         });
     }, []);
-
-    //loop metronome sound and set playback speed to match bpm
-    useEffect(() => {
-        if (player) {
-            player.setRateAsync(bpm / 100, true, Audio.PitchCorrectionQuality.Medium);
-            player.setIsLoopingAsync(true);
-        }
-    }, [bpm, player]);
 
     //toggle metronome sound
     useEffect(() => {
@@ -101,6 +94,19 @@ const Main = () => {
             }
             : undefined;
     }, [player]);
+
+    //change bpm
+    const changeBpm = useCallback(debounce(async (amt) => {
+        const newBpm = bpm + amt;
+        if (player) {
+            const {isPlaying} = await player.getStatusAsync();
+            await player.pauseAsync();
+            await player.setStatusAsync({rate: newBpm / 100});
+            if (isPlaying)
+                player.playAsync();
+        }
+        setBpm(newBpm);
+    }, 30), [bpm]);
 
     //run timer
     useEffect(() => {
@@ -203,31 +209,15 @@ const Main = () => {
         }]);
     }
 
-    const screenshotLog = () => {
+    //save image of event log
+    const saveLog = async () => {
        try {
-            captureRef(screenshotRef).then(uri => {
-                saveToLibraryAsync(uri);
-            })
+            const uri = await captureRef(screenshotRef);
+            await saveToLibraryAsync(uri);
+            Alert.alert('Image saved to camera roll');
         }
         catch (err) {console.log(err)}
     }
-
-    const conditionalStyles = (base, hide) => {
-        console.log(hide)
-        const visibility = hide
-            ? {display: 'none', position: 'relative'}
-            : {display: 'flex', position: 'absolute'}
-
-        return {...base, ...visibility};
-    }
-
-    /*
-
-            <TouchableHighlight onPress={screenshotLog} style={{...bottomLeft}}>
-                <Feather name={'download'} size={1.8*em} color={'white'} />
-            </TouchableHighlight>
-     */
-
 
     return (
         <View style={container}>
@@ -247,18 +237,18 @@ const Main = () => {
                 <Feather name={'help-circle'} size={1.8*em} color={'white'} />
             </TouchableHighlight>
 
-            <TouchableHighlight onPress={screenshotLog} style={{
+            <TouchableHighlight onPress={saveLog} style={{
                 ...bottomLeft,
-                display: (timerActive && events.length < 1) ? 'none' : 'flex',
-                position: (timerActive && events.length < 1) ? 'relative' : 'abolute',
+                display: (!timerActive && events.length > 1) ? 'flex' : 'none',
+                position: (!timerActive && events.length > 1) ? 'absolute' : 'relative',
             }}>
                 <Feather name={'download'} size={1.8*em} color={'white'} />
             </TouchableHighlight>
 
             <TouchableHighlight onPress={() => setDisplayMetronome(!displayMetronome)} style={{
                 ...bottomLeft,
-                display: (timerActive && events.length < 1) ? 'flex' : 'none',
-                position: (timerActive && events.length < 1) ? 'absolute' : 'relative',
+                display: (timerActive || events.length < 1) ? 'flex' : 'none',
+                position: (timerActive || events.length < 1) ? 'absolute' : 'relative',
             }}>
                 <MaterialCommunityIcons name={'metronome'} size={1.8*em} color={'white'} />
             </TouchableHighlight>
@@ -267,13 +257,13 @@ const Main = () => {
                 display: displayMetronome ? 'flex' : 'none',
                 position: displayMetronome ? 'absolute' : 'relative',
             }}>
-                <TouchableHighlight onPress={() => setBpm(bpm + 4)}>
+                <TouchableHighlight onPress={() => changeBpm(4)}>
                     <Feather name={'plus'} size={1.8*em} color={'white'} />
                 </TouchableHighlight>
                 <TouchableHighlight onPress={() => setMetronomeActive(!metronomeActive)}>
                     <Feather name={metronomeActive ? 'pause' : 'play'} size={1.8*em} color={'white'}/>
                 </TouchableHighlight>
-                <TouchableHighlight onPress={() => setBpm(bpm - 4)}>
+                <TouchableHighlight onPress={() => changeBpm(-4)}>
                     <Feather name={'minus'} size={1.8*em} color={'white'} />
                 </TouchableHighlight>
                 <Text style={{color: 'white', fontSize: 1.4*em}}>{bpm} bpm</Text>

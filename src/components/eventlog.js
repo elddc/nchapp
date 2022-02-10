@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useRef, forwardRef} from 'react';
+import React, {useContext, useEffect, forwardRef} from 'react';
 import {View, Text, FlatList, ScrollView} from 'react-native';
 
 import StyleContext from '../context/stylecontext';
@@ -79,7 +79,7 @@ const EventLog = forwardRef(({events, short}, ref) => {
 			stickyHeaderIndices={[0]}
 			directionalLockEnabled={true}
 			onScrollToIndexFailed={() => { //if last item not rendered
-				list.current.scrollToEnd();
+				ref.current.scrollToEnd();
 				setTimeout(scrollToEnd, 70);
 			}}
 			style={[eventLog, {marginBottom: short ? 2*em : null}]}
