@@ -95,18 +95,33 @@ const Main = () => {
             : undefined;
     }, [player]);
 
-    //change bpm
-    const changeBpm = useCallback(debounce(async (amt) => {
-        const newBpm = bpm + amt;
+    //handle bpm changes
+    useEffect(() => {
         if (player) {
-            const {isPlaying} = await player.getStatusAsync();
-            await player.pauseAsync();
-            await player.setStatusAsync({rate: newBpm / 100});
-            if (isPlaying)
+            console.log('bpm ' + bpm)
+            debouncedPauseMetronome(); //pause player after first bpm change
+            debouncedChangeBpm(bpm); //set playback rate 30ms after last change
+        }
+    }, [bpm]);
+
+    //pause player without updating metronomeActive
+    const debouncedPauseMetronome = useCallback(debounce(() => {
+        console.log('pause')
+        if (player)
+            player.pauseAsync();
+    }, 30, true), [player]);
+
+    //change playback rate to match bpm
+    const debouncedChangeBpm = useCallback(debounce(async (newRate) => {
+        console.log('change')
+        if (player) {
+            //pause, change playback rate, then resume metronome (causes slight delay but prevents strange behaviors)
+            //pause and resume can be removed for performance at cost of slight
+            await player.setStatusAsync({rate: newRate/100});
+            if (metronomeActive)
                 player.playAsync();
         }
-        setBpm(newBpm);
-    }, 30), [bpm]);
+    }, 30), [player, metronomeActive]);
 
     //run timer
     useEffect(() => {
@@ -257,13 +272,13 @@ const Main = () => {
                 display: displayMetronome ? 'flex' : 'none',
                 position: displayMetronome ? 'absolute' : 'relative',
             }}>
-                <TouchableHighlight onPress={() => changeBpm(4)}>
+                <TouchableHighlight onPress={() => setBpm(bpm + 4)}>
                     <Feather name={'plus'} size={1.8*em} color={'white'} />
                 </TouchableHighlight>
                 <TouchableHighlight onPress={() => setMetronomeActive(!metronomeActive)}>
                     <Feather name={metronomeActive ? 'pause' : 'play'} size={1.8*em} color={'white'}/>
                 </TouchableHighlight>
-                <TouchableHighlight onPress={() => changeBpm(-4)}>
+                <TouchableHighlight onPress={() => setBpm(bpm - 4)}>
                     <Feather name={'minus'} size={1.8*em} color={'white'} />
                 </TouchableHighlight>
                 <Text style={{color: 'white', fontSize: 1.4*em}}>{bpm} bpm</Text>

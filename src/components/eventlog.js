@@ -46,6 +46,7 @@ const Separator = () => {
 //full table
 //events: data to display
 //short: whether to make list height smaller to accomodate other elements
+//ref: ref to flatlist, used in auto-scroll as well
 const EventLog = forwardRef(({events, short}, ref) => {
 	const {em, eventLog} = useContext(StyleContext);
 
