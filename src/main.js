@@ -58,8 +58,8 @@ const Main = () => {
     const [displayHelp, setDisplayHelp] = useState(false); //visibility of help modal
     const [displayMetronome, setDisplayMetronome] = useState(false); //visibility of metronome bar
 
-    //ref of event log for screenshot purposes
-    const screenshotRef = useRef();
+    //ref of event log to save
+    const eventLogRef = useRef();
 
     //load metronome sound
     useEffect(() => {
@@ -98,30 +98,26 @@ const Main = () => {
     //handle bpm changes
     useEffect(() => {
         if (player) {
-            console.log('bpm ' + bpm)
             debouncedPauseMetronome(); //pause player after first bpm change
-            debouncedChangeBpm(bpm); //set playback rate 30ms after last change
+            debouncedChangeBpm(bpm/100); //set playback rate after last change
         }
     }, [bpm]);
 
-    //pause player without updating metronomeActive
+    //temporarily pause player (does not update metronomeActive)
     const debouncedPauseMetronome = useCallback(debounce(() => {
-        console.log('pause')
         if (player)
             player.pauseAsync();
-    }, 30, true), [player]);
+    }, 200, true), [player]);
 
-    //change playback rate to match bpm
-    const debouncedChangeBpm = useCallback(debounce(async (newRate) => {
-        console.log('change')
+    //change playback rate to match bpm, resume metronome
+    //rate: new playback rate; passed as param to avoid bpm dependency interfering with debounce
+    const debouncedChangeBpm = useCallback(debounce(async (rate) => {
         if (player) {
-            //pause, change playback rate, then resume metronome (causes slight delay but prevents strange behaviors)
-            //pause and resume can be removed for performance at cost of slight
-            await player.setStatusAsync({rate: newRate/100});
+            await player.setStatusAsync({rate});
             if (metronomeActive)
                 player.playAsync();
         }
-    }, 30), [player, metronomeActive]);
+    }, 200), [player, metronomeActive]);
 
     //run timer
     useEffect(() => {
@@ -191,6 +187,10 @@ const Main = () => {
             let prevActions = {...actions};
             prevActions['CPR'] = {...actions.CPR, active: -1};
             setActions(prevActions);
+
+            //turn off metronome
+            setDisplayMetronome(false);
+            setMetronomeActive(false);
         }
         else if (name === 'Other') {
             //open text input
@@ -227,7 +227,7 @@ const Main = () => {
     //save image of event log
     const saveLog = async () => {
        try {
-            const uri = await captureRef(screenshotRef);
+            const uri = await captureRef(eventLogRef.current);
             await saveToLibraryAsync(uri);
             Alert.alert('Image saved to camera roll');
         }
@@ -244,7 +244,7 @@ const Main = () => {
                         <Timer active={timerActive} toggleTimer={toggleTimer} elaspedTime={elaspedTime} />
                         <ActionButtons actions={actions} logEvent={logEvent} />
                     </View>
-                    <EventLog ref={screenshotRef} events={events} short={displayMetronome} />
+                    <EventLog events={events} short={displayMetronome} ref={eventLogRef}/>
                 </View>
             </TimeContext.Provider>
 
