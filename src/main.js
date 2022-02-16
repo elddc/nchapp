@@ -1,7 +1,7 @@
 import React, {useState, useEffect, useContext, useRef, useCallback} from 'react';
 import {Text, View, TouchableHighlight, StatusBar, Alert, Platform} from 'react-native';
 import {debounce} from 'debounce';
-import {captureRef} from 'react-native-view-shot';
+import {ViewShot} from 'react-native-view-shot';
 import {useKeepAwake} from 'expo-keep-awake';
 import {Audio} from 'expo-av';
 import {saveToLibraryAsync} from 'expo-media-library';
@@ -44,7 +44,7 @@ const Main = () => {
         Epinephrine: {color: '#cca300'},
         Medication: {color: '#898989', list: ['Vasopressin', 'Amiodarone', 'Lidocaine', 'Magnesium Sulfate', 'Other']},
         Rhythm: {color: '#208552', list: ['PEA', 'VT/vfib', 'Asystole']},
-        Event: {color: '#5548AB', list: [
+        Event: {color: '#5548ab', list: [
                 'Oxygen', 'IV access', 'IO access', 'Advanced airway: Supraglottic airway',
                 'Advanced airway: Endotracheal intubation', 'Waveform capnography', 'OPA (oropharyngeal airway)',
                 'NPA (nasopharyngeal airway)', 'Backboard', 'Defibrillator: Pads applied', 'Other'
@@ -58,8 +58,14 @@ const Main = () => {
     const [displayHelp, setDisplayHelp] = useState(false); //visibility of help modal
     const [displayMetronome, setDisplayMetronome] = useState(false); //visibility of metronome bar
 
-    //ref of event log to save
-    const eventLogRef = useRef();
+    //end screen
+    const [endScreen, setEndScreen] = useState(false); //end status
+    const [endActions, setEndActions] = useState({ //data for input buttons on end screen
+        'Add Notes': {color: '#5548ab'},
+        Save: {color: '#189d42'},
+        Resume: {color: '#114985'},
+        New: {color: '#de1245'}
+    });
 
     //load metronome sound
     useEffect(() => {
@@ -132,6 +138,8 @@ const Main = () => {
         }
         else {
             clearInterval(timeInterval);
+            if (events.length > 1)
+                setEndScreen(true);
         }
 
         return () => { clearInterval(timeInterval) }
@@ -175,6 +183,23 @@ const Main = () => {
 
     //add event to event log
     const logEvent = (name) => {
+        if (endScreen) {
+            switch (name) {
+                case 'Save':
+                    break;
+                case 'Resume':
+                    break;
+                case 'Start':
+                    break;
+                case 'Fullscreen':
+                    break;
+                default:
+                    console.log(name);
+            }
+
+            return;
+        }
+
         //handle special events
         if (name.includes('CPR')) { //name is not always key in actions!
             //toggle CPR status
@@ -226,12 +251,13 @@ const Main = () => {
 
     //save image of event log
     const saveLog = async () => {
+       /* todo
        try {
             const uri = await captureRef(eventLogRef.current);
             await saveToLibraryAsync(uri);
             Alert.alert('Image saved to camera roll');
         }
-        catch (err) {console.log(err)}
+        catch (err) {console.log(err)}*/
     }
 
     return (
@@ -242,9 +268,9 @@ const Main = () => {
                 <View style={main}>
                     <View style={{marginRight: landscape ? 2*vh : null}}>
                         <Timer active={timerActive} toggleTimer={toggleTimer} elaspedTime={elaspedTime} />
-                        <ActionButtons actions={actions} logEvent={logEvent} />
+                        <ActionButtons actions={(endScreen) ? endActions : actions} logEvent={logEvent} />
                     </View>
-                    <EventLog events={events} short={displayMetronome} ref={eventLogRef}/>
+                    <EventLog events={events} short={displayMetronome}/>
                 </View>
             </TimeContext.Provider>
 
@@ -252,18 +278,18 @@ const Main = () => {
                 <Feather name={'help-circle'} size={1.8*em} color={'white'} />
             </TouchableHighlight>
 
-            <TouchableHighlight onPress={saveLog} style={{
+            <TouchableHighlight style={{
                 ...bottomLeft,
-                display: (!timerActive && events.length > 1) ? 'flex' : 'none',
-                position: (!timerActive && events.length > 1) ? 'absolute' : 'relative',
+                display: (endScreen) ? 'flex' : 'none',
+                position: (endScreen) ? 'absolute' : 'relative',
             }}>
-                <Feather name={'download'} size={1.8*em} color={'white'} />
+                <MaterialCommunityIcons name='arrow-expand' size={1.8*em} color={'white'} />
             </TouchableHighlight>
 
             <TouchableHighlight onPress={() => setDisplayMetronome(!displayMetronome)} style={{
                 ...bottomLeft,
-                display: (timerActive || events.length < 1) ? 'flex' : 'none',
-                position: (timerActive || events.length < 1) ? 'absolute' : 'relative',
+                display: (!endScreen) ? 'flex' : 'none',
+                position: (!endScreen) ? 'absolute' : 'relative',
             }}>
                 <MaterialCommunityIcons name={'metronome'} size={1.8*em} color={'white'} />
             </TouchableHighlight>

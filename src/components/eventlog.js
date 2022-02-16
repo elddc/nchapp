@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, forwardRef} from 'react';
+import React, {useContext, useEffect, useRef} from 'react';
 import {View, Text, FlatList, ScrollView} from 'react-native';
 
 import StyleContext from '../context/stylecontext';
@@ -47,8 +47,9 @@ const Separator = () => {
 //events: data to display
 //short: whether to make list height smaller to accomodate other elements
 //ref: ref to flatlist, used in auto-scroll as well
-const EventLog = forwardRef(({events, short}, ref) => {
+const EventLog = (({events, short}) => {
 	const {em, eventLog} = useContext(StyleContext);
+	const listRef = useRef();
 
 	//automatically scroll to end of list after new items added
 	useEffect(() => {
@@ -58,8 +59,8 @@ const EventLog = forwardRef(({events, short}, ref) => {
 
 	//scroll to last item
 	const scrollToEnd = () => {
-		if (ref.current)
-			ref.current.scrollToIndex({
+		if (listRef.current)
+			listRef.current.scrollToIndex({
 				index: events.length - 1, //same as key
 				viewPosition: 1,
 			});
@@ -84,9 +85,14 @@ const EventLog = forwardRef(({events, short}, ref) => {
 				setTimeout(scrollToEnd, 70);
 			}}
 			style={[eventLog, {marginBottom: short ? 2*em : null}]}
-			ref={ref}
+			ref={listRef}
 		/>
 	);
 });
 
+const FullscreenLog = () => {
+	//todo
+}
+
 export default EventLog;
+export {FullscreenLog};
