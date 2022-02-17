@@ -5,6 +5,8 @@ import {Feather} from '@expo/vector-icons';
 import StyleContext from '../context/stylecontext';
 import Popup from './popup';
 
+//todo check position on devices of differing screen sizes for button visibility
+
 //text input dialog
 //visible: whether component should display
 //submit: onPress callback

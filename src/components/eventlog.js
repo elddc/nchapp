@@ -3,10 +3,11 @@ import {View, Text, FlatList, ScrollView} from 'react-native';
 
 import StyleContext from '../context/stylecontext';
 import TimeContext from '../context/timecontext';
-import {formatMilliseconds} from '../../util/formattime';
+import formatTime from '../../util/formattime';
 
 //table header
-const Header = () => {
+const Header = React.memo(() => {
+	console.log('render')
 	const {tableRow, headerCell} = useContext(StyleContext);
 
 	return (
@@ -16,7 +17,7 @@ const Header = () => {
 			<Text style={headerCell}>Time</Text>
 		</View>
 	);
-}
+});
 
 //items in table
 //name: name to display
@@ -28,7 +29,7 @@ const Row = ({name, time}) => {
 	return (
 		<View style={tableRow}>
 			<Text style={cell}>{name}</Text>
-			<Text style={cell}>{formatMilliseconds(time - startTime)}</Text>
+			<Text style={cell}>{formatTime(time - startTime)}</Text>
 			<Text style={cell}>{time.toTimeString().split(' ')[0]}</Text>
 		</View>
 	);

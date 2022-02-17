@@ -61,10 +61,10 @@ const Main = () => {
     //end screen
     const [endScreen, setEndScreen] = useState(false); //end status
     const [endActions, setEndActions] = useState({ //data for input buttons on end screen
-        'Add Notes': {color: '#5548ab'},
-        Save: {color: '#189d42'},
-        Resume: {color: '#114985'},
-        New: {color: '#de1245'}
+        Restart: {color: '#de1245'},
+        Resume: {color: '#17589e'},
+        'Add Notes': {color: '#6d53ba'},
+        Save: {color: '#239946'},
     });
 
     //load metronome sound
@@ -119,44 +119,42 @@ const Main = () => {
     //rate: new playback rate; passed as param to avoid bpm dependency interfering with debounce
     const debouncedChangeBpm = useCallback(debounce(async (rate) => {
         if (player) {
+            console.log('dddd')
             await player.setStatusAsync({rate});
             if (metronomeActive)
                 player.playAsync();
         }
     }, 200), [player, metronomeActive]);
 
-    //run timer
-    useEffect(() => {
-        if (timerActive) {
-            let time = new Date();
-            setStartTime(time);
+    //start timer, optionally w/ elapsed time
+    const startTimer = (elapsed = 0) => {
+        let time = Date.now() - elapsed;
 
-            setTimeInterval(setInterval(() => {
-                //get accurate time elapsed by comparing to start time
-                setElapsedTime(Math.floor((Date.now() - time) / 1000));
-            }, 250));
-        }
-        else {
-            clearInterval(timeInterval);
-            if (events.length > 1)
-                setEndScreen(true);
-        }
+        setTimerActive(true);
+        setStartTime(time);
+        setEndScreen(false);
+        setTimeInterval(setInterval(() => {
+            //get accurate time elapsed by comparing to start time
+            setElapsedTime(Date.now() - time);
+        }, 250));
+    }
 
-        return () => { clearInterval(timeInterval) }
-    }, [timerActive]);
+    const endTimer = () => {
+        setTimerActive(false);
+        clearInterval(timeInterval);
+        if (events.length > 0)
+            setEndScreen(true);
+    }
 
     //start/stop timer
     const toggleTimer = (auto = false) => {
         if (!timerActive) {
-            setTimerActive(true);
             logEvent('Start');
         }
         else if (auto) { //skip confirm dialog
-            setTimerActive(false);
             logEvent('End');
         }
         else if (Platform.OS === 'web' && confirm('Are you sure you want to end the timer?')) {
-            setTimerActive(false);
             logEvent('End');
         }
         else {
@@ -171,7 +169,6 @@ const Main = () => {
                         text: 'Yes',
                         style: 'destructive',
                         onPress: () => {
-                            setTimerActive(false);
                             logEvent('End');
                         },
                     },
@@ -186,8 +183,11 @@ const Main = () => {
         if (endScreen) {
             switch (name) {
                 case 'Save':
+                    //todo
                     break;
                 case 'Resume':
+                    setEvents(events.slice(0, events.length - 1));
+                    startTimer(elaspedTime);
                     break;
                 case 'Start':
                     break;
@@ -216,6 +216,9 @@ const Main = () => {
             //turn off metronome
             setDisplayMetronome(false);
             setMetronomeActive(false);
+
+            //stop timer
+            endTimer();
         }
         else if (name === 'Other') {
             //open text input
@@ -230,12 +233,9 @@ const Main = () => {
 
         //get event log
         let previousEvents;
-        if (name === 'Start') { //clear event log
-            previousEvents = [];
-        }
-        else if (!timerActive) { //start code
-            setTimerActive(true);
-            previousEvents = [{name: 'Start', time: new Date(), index: 0}];
+        if (!timerActive) { //start code
+            startTimer();
+            previousEvents = (name = 'Start') ? [] : [{name: 'Start', time: new Date(), index: 0}];
         }
         else {
             previousEvents = [...events];
