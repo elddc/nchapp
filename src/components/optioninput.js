@@ -37,6 +37,7 @@ const OptionInput = ({visible, submit, dismiss}) => {
 							onSubmitEditing={submitText}
 							style={textbox}
 							placeholder={'Type here'}
+							autoFocus={true}
 						/>
 						<TouchableHighlight onPress={clearText} underlayColor={'transparent'} style={xButton}>
 						    <Feather name={'x'} size={1.5 * em} color={'black'} />
