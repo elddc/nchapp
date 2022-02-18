@@ -1,4 +1,4 @@
-import React, {useState, useContext} from 'react';
+import React, {useState, useContext, useEffect} from 'react';
 import {View, Text, TextInput, TouchableHighlight} from 'react-native';
 import {Feather} from '@expo/vector-icons';
 
@@ -11,9 +11,14 @@ import Popup from './popup';
 //visible: whether component should display
 //submit: onPress callback
 //dismiss: function to hide component
-const OptionInput = ({visible, submit, dismiss}) => {
+const OptionInput = ({visible, multiline, submit, dismiss}) => {
 	const {em, textboxContainer, textbox, buttonText, xButton, dialogButton, row} = useContext(StyleContext);
 	const [text, setText] = useState(''); //user entered text
+
+	//clear input when input switches from single to multi-line text
+	useEffect(() => {
+	    clearText();
+	}, [multiline]);
 
 	//send text to event log and close popup
 	const submitText = () => {
@@ -39,6 +44,7 @@ const OptionInput = ({visible, submit, dismiss}) => {
 							onSubmitEditing={submitText}
 							style={textbox}
 							placeholder={'Type here'}
+							multiline={multiline}
 							autoFocus={true}
 						/>
 						<TouchableHighlight onPress={clearText} underlayColor={'transparent'} style={xButton}>

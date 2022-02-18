@@ -61,11 +61,14 @@ const Main = () => {
     //end screen
     const [endScreen, setEndScreen] = useState(false); //end status
     const [endActions, setEndActions] = useState({ //data for input buttons on end screen
-        Restart: {color: '#de1245'},
-        Resume: {color: '#17589e'},
-        'Add Notes': {color: '#6d53ba'},
+        'Add Notes': {color: '#6148b1'},
         Save: {color: '#239946'},
+        Resume: {color: '#174b9e'},
+        Clear: {color: '#dc2c1f'},
     });
+    const [multilineInput, setMultilineInput] = useState(false);
+
+    /* metronome */
 
     //load metronome sound
     useEffect(() => {
@@ -119,12 +122,13 @@ const Main = () => {
     //rate: new playback rate; passed as param to avoid bpm dependency interfering with debounce
     const debouncedChangeBpm = useCallback(debounce(async (rate) => {
         if (player) {
-            console.log('dddd')
             await player.setStatusAsync({rate});
             if (metronomeActive)
                 player.playAsync();
         }
     }, 200), [player, metronomeActive]);
+
+    /* timer */
 
     //start timer, optionally w/ elapsed time
     const startTimer = (elapsed = 0) => {
@@ -133,6 +137,7 @@ const Main = () => {
         setTimerActive(true);
         setStartTime(time);
         setEndScreen(false);
+        setMultilineInput(false);
         setTimeInterval(setInterval(() => {
             //get accurate time elapsed by comparing to start time
             setElapsedTime(Date.now() - time);
@@ -142,8 +147,10 @@ const Main = () => {
     const endTimer = () => {
         setTimerActive(false);
         clearInterval(timeInterval);
-        if (events.length > 0)
-            setEndScreen(true);
+        setEndScreen(true);
+        setMultilineInput(true);
+        if (events.length == 0)
+            console.log('uh ohhhh')
     }
 
     //start/stop timer
@@ -178,6 +185,8 @@ const Main = () => {
         }
     };
 
+    /* event log */
+
     //add event to event log
     const logEvent = (name) => {
         if (endScreen) {
@@ -189,7 +198,13 @@ const Main = () => {
                     setEvents(events.slice(0, events.length - 1));
                     startTimer(elaspedTime);
                     break;
-                case 'Start':
+                case 'Clear':
+                    setEndScreen(false);
+                    setEvents([]);
+                    setElapsedTime(0);
+                    break;
+                case 'Add Notes':
+                    setDisplayInput(true); //todo allow line breaks
                     break;
                 case 'Fullscreen':
                     break;
@@ -317,7 +332,12 @@ const Main = () => {
                 dismiss={() => setDisplayOptions(false)}
                 select={logEvent}
             />
-            <OptionInput visible={displayInput} submit={logEvent} dismiss={() => setDisplayInput(false)} />
+            <OptionInput 
+                visible={displayInput} 
+                multiline={multilineInput} 
+                submit={logEvent} 
+                dismiss={() => setDisplayInput(false)}
+            />
 
             <Help visible={displayHelp} dismiss={() => {setDisplayHelp(false)}} />
         </View>
