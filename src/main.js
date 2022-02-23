@@ -61,12 +61,13 @@ const Main = () => {
     //end screen
     const [endScreen, setEndScreen] = useState(false); //end status
     const [endActions, setEndActions] = useState({ //data for input buttons on end screen
-        'Add Notes': {color: '#6148b1'},
+        Notes: {color: '#6148b1'},
         Save: {color: '#239946'},
         Resume: {color: '#174b9e'},
         Clear: {color: '#dc2c1f'},
     });
     const [multilineInput, setMultilineInput] = useState(false);
+    const [notes, setNotes] = useState(false);
 
     /* metronome */
 
@@ -137,6 +138,7 @@ const Main = () => {
         setTimerActive(true);
         setStartTime(time);
         setEndScreen(false);
+        setNotes(false);
         setMultilineInput(false);
         setTimeInterval(setInterval(() => {
             //get accurate time elapsed by comparing to start time
@@ -200,16 +202,20 @@ const Main = () => {
                     break;
                 case 'Clear':
                     setEndScreen(false);
+                    setNotes(false);
                     setEvents([]);
                     setElapsedTime(0);
                     break;
-                case 'Add Notes':
-                    setDisplayInput(true); //todo allow line breaks
+                case 'Notes':
+                    setDisplayInput(true);
                     break;
                 case 'Fullscreen':
                     break;
+                case 'Start':
+                    //todo
+                    break;
                 default:
-                    console.log(name);
+                   setNotes(name);
             }
 
             return;
@@ -250,7 +256,7 @@ const Main = () => {
         let previousEvents;
         if (!timerActive) { //start code
             startTimer();
-            previousEvents = (name = 'Start') ? [] : [{name: 'Start', time: new Date(), index: 0}];
+            previousEvents = (name === 'Start') ? [] : [{name: 'Start', time: new Date(), index: 0}];
         }
         else {
             previousEvents = [...events];
@@ -285,7 +291,7 @@ const Main = () => {
                         <Timer active={timerActive} toggleTimer={toggleTimer} elaspedTime={elaspedTime} />
                         <ActionButtons actions={(endScreen) ? endActions : actions} logEvent={logEvent} />
                     </View>
-                    <EventLog events={events} short={displayMetronome}/>
+                    <EventLog events={events} short={displayMetronome} notes={notes} />
                 </View>
             </TimeContext.Provider>
 

@@ -12,7 +12,7 @@ import Popup from './popup';
 //submit: onPress callback
 //dismiss: function to hide component
 const OptionInput = ({visible, multiline, submit, dismiss}) => {
-	const {em, textboxContainer, textbox, buttonText, xButton, dialogButton, row} = useContext(StyleContext);
+	const {em, vh, textboxContainer, textbox, buttonText, xButton, dialogButton, row} = useContext(StyleContext);
 	const [text, setText] = useState(''); //user entered text
 
 	//clear input when input switches from single to multi-line text
@@ -31,6 +31,10 @@ const OptionInput = ({visible, multiline, submit, dismiss}) => {
 		setText('');
 	}
 
+	const foo = (ev) => {
+		console.log(ev.nativeEvent);
+	}
+
 	return (
 		<Popup
 			visible={visible}
@@ -38,15 +42,18 @@ const OptionInput = ({visible, multiline, submit, dismiss}) => {
 			content={
 				<View>
 					<View style={textboxContainer}>
-						<TextInput
-							value={text}
-							onChangeText={setText}
-							onSubmitEditing={submitText}
-							style={textbox}
-							placeholder={'Type here'}
-							multiline={multiline}
-							autoFocus={true}
-						/>
+						<View style={{maxHeight: 30*vh}}>
+							<TextInput
+								value={text}
+								onChangeText={setText}
+								onSubmitEditing={multiline ? null : submitText}
+								style={textbox}
+								placeholder={'Type here'}
+								multiline={multiline}
+								autoFocus={true}
+								onSelectionChange={foo}
+							/>
+						</View>
 						<TouchableHighlight onPress={clearText} underlayColor={'transparent'} style={xButton}>
 						    <Feather name={'x'} size={1.5 * em} color={'black'} />
 						</TouchableHighlight>

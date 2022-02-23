@@ -44,11 +44,27 @@ const Separator = () => {
 	)
 }
 
+//displays additional notes
+const Footer = ({content}) => {
+	const {text, em} = useContext(StyleContext);
+
+	if (!content)
+		return null;
+
+	return (
+		<View style={{paddingBottom: 2*em}}>
+			<Text style={text} dataDetectorTypes={['phoneNumber', 'link', 'address']}>
+				{content}
+			</Text>
+		</View>
+	)
+}
+
 //full table
 //events: data to display
 //short: whether to make list height smaller to accomodate other elements
 //ref: ref to flatlist, used in auto-scroll as well
-const EventLog = (({events, short}) => {
+const EventLog = (({events, short, notes}) => {
 	const {em, eventLog} = useContext(StyleContext);
 	const listRef = useRef();
 
@@ -57,6 +73,11 @@ const EventLog = (({events, short}) => {
 		const timeout = setTimeout(scrollToEnd, 30); //allow for render time
 		return () => clearTimeout(timeout);
 	}, [events]);
+
+	useEffect(() => {
+		if (listRef.current)
+		listRef.current.scrollToEnd();
+	}, [notes]);
 
 	//scroll to last item
 	const scrollToEnd = () => {
@@ -79,6 +100,7 @@ const EventLog = (({events, short}) => {
 			keyExtractor={item => item.index}
 			ListHeaderComponent={Header}
 			ItemSeparatorComponent={Separator}
+			ListFooterComponent={<Footer content={notes} />}
 			stickyHeaderIndices={[0]}
 			directionalLockEnabled={true}
 			onScrollToIndexFailed={() => { //if last item not rendered
