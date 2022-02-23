@@ -113,9 +113,27 @@ const EventLog = (({events, short, notes}) => {
 	);
 });
 
-const FullscreenLog = () => {
-	//todo
-}
+//fullscreen, scrollview version of EventLog
+const FullscreenLog = (({events, visible, notes}) => {
+	const {em, eventLog} = useContext(StyleContext);
+
+	return (
+		<ScrollView
+			ListHeaderComponent={Header}
+			ItemSeparatorComponent={Separator}
+			ListFooterComponent={<Footer content={notes} />}
+			stickyHeaderIndices={[0]}
+			directionalLockEnabled={true}
+			style={[eventLog, {
+				position: 'absolute',
+				top: 0,
+				left: 0,
+			}]}
+		>
+			{events.map((item) => (<Row name={item.name} time={item.time} key={item.index} />))}
+		</ScrollView>
+	);
+});
 
 export default EventLog;
 export {FullscreenLog};

@@ -15,6 +15,7 @@ const Timer = ({toggleTimer, active, elaspedTime}) => {
 	return (
 		<View style={timerContainer}>
 			<TouchableHighlight
+				disabled={!toggleTimer}
 				onPress={() => toggleTimer(false)}
 				onLongPress={() => toggleTimer(true)}
 				style={{

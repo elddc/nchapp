@@ -12,7 +12,7 @@ import TimeContext from './context/timecontext';
 import StyleContext from './context/stylecontext';
 
 import Timer from './components/timer';
-import EventLog from './components/eventlog';
+import EventLog, {FullscreenLog} from './components/eventlog';
 import OptionList from './components/optionlist';
 import OptionInput from './components/optioninput';
 import Help from './components/help';
@@ -209,11 +209,6 @@ const Main = () => {
                 case 'Notes':
                     setDisplayInput(true);
                     break;
-                case 'Fullscreen':
-                    break;
-                case 'Start':
-                    //todo
-                    break;
                 default:
                    setNotes(name);
             }
@@ -270,6 +265,10 @@ const Main = () => {
         }]);
     }
 
+    const toggleFullscreenLog = () => {
+
+    }
+
     //save image of event log
     const saveLog = async () => {
        /* todo
@@ -288,7 +287,7 @@ const Main = () => {
             <TimeContext.Provider value={startTime}>
                 <View style={main}>
                     <View style={{marginRight: landscape ? 2*vh : null}}>
-                        <Timer active={timerActive} toggleTimer={toggleTimer} elaspedTime={elaspedTime} />
+                        <Timer active={timerActive} toggleTimer={endScreen ? null : toggleTimer} elaspedTime={elaspedTime} />
                         <ActionButtons actions={(endScreen) ? endActions : actions} logEvent={logEvent} />
                     </View>
                     <EventLog events={events} short={displayMetronome} notes={notes} />
@@ -299,7 +298,7 @@ const Main = () => {
                 <Feather name={'help-circle'} size={1.8*em} color={'white'} />
             </TouchableHighlight>
 
-            <TouchableHighlight style={{
+            <TouchableHighlight onPress={toggleFullscreenLog} style={{
                 ...bottomLeft,
                 display: (endScreen) ? 'flex' : 'none',
                 position: (endScreen) ? 'absolute' : 'relative',
@@ -346,6 +345,8 @@ const Main = () => {
             />
 
             <Help visible={displayHelp} dismiss={() => {setDisplayHelp(false)}} />
+
+            <FullscreenLog events={events} visible={endScreen} notes={notes} />
         </View>
     );
 }
