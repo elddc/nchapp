@@ -30,7 +30,7 @@ const Row = ({name, time}) => {
 		<View style={tableRow}>
 			<Text style={cell}>{name}</Text>
 			<Text style={cell}>{formatTime(time - startTime)}</Text>
-			<Text style={cell}>{time.toTimeString().split(' ')[0]}</Text>
+			<Text style={cell}>{new Date(time).toTimeString().split(' ')[0]}</Text>
 		</View>
 	);
 }
@@ -115,23 +115,25 @@ const EventLog = (({events, short, notes}) => {
 
 //fullscreen, scrollview version of EventLog
 const FullscreenLog = (({events, visible, notes}) => {
-	const {em, eventLog} = useContext(StyleContext);
+	const {em, eventLog, fullscreen} = useContext(StyleContext);
 
 	return (
-		<ScrollView
-			ListHeaderComponent={Header}
-			ItemSeparatorComponent={Separator}
-			ListFooterComponent={<Footer content={notes} />}
-			stickyHeaderIndices={[0]}
-			directionalLockEnabled={true}
-			style={[eventLog, {
-				position: 'absolute',
-				top: 0,
-				left: 0,
-			}]}
-		>
-			{events.map((item) => (<Row name={item.name} time={item.time} key={item.index} />))}
-		</ScrollView>
+		<View style={fullscreen}>
+			<ScrollView
+				stickyHeaderIndices={[0]}
+				directionalLockEnabled={true}
+				style={eventLog}
+			>
+				<Header />
+				{events.map((item) => {return (
+					<View key={item.index}>
+						<Separator/>
+						<Row name={item.name} time={item.time}/>
+					</View>
+				)})}
+				<Footer content={notes} />
+			</ScrollView>
+		</View>
 	);
 });
 

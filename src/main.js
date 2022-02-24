@@ -68,6 +68,7 @@ const Main = () => {
     });
     const [multilineInput, setMultilineInput] = useState(false);
     const [notes, setNotes] = useState(false);
+    const [fullscreened, setFullscreened] = useState(false);
 
     /* metronome */
 
@@ -151,7 +152,7 @@ const Main = () => {
         clearInterval(timeInterval);
         setEndScreen(true);
         setMultilineInput(true);
-        if (events.length == 0)
+        if (events.length === 0)
             console.log('uh ohhhh')
     }
 
@@ -251,7 +252,7 @@ const Main = () => {
         let previousEvents;
         if (!timerActive) { //start code
             startTimer();
-            previousEvents = (name === 'Start') ? [] : [{name: 'Start', time: new Date(), index: 0}];
+            previousEvents = (name === 'Start') ? [] : [{name: 'Start', time: Date.now(), index: 0}];
         }
         else {
             previousEvents = [...events];
@@ -260,7 +261,7 @@ const Main = () => {
         //add new event to log
         setEvents([...previousEvents, {
             name: name,
-            time: new Date(),
+            time: Date.now(),
             index: previousEvents.length, //used as key in flatlist
         }]);
     }
@@ -283,7 +284,6 @@ const Main = () => {
     return (
         <View style={container}>
             <StatusBar barStyle={'light-content'} />
-
             <TimeContext.Provider value={startTime}>
                 <View style={main}>
                     <View style={{marginRight: landscape ? 2*vh : null}}>
@@ -292,61 +292,62 @@ const Main = () => {
                     </View>
                     <EventLog events={events} short={displayMetronome} notes={notes} />
                 </View>
+
+                <TouchableHighlight onPress={() => setDisplayHelp(!displayHelp)} style={bottomRight}>
+                    <Feather name={'help-circle'} size={1.8*em} color={'white'} />
+                </TouchableHighlight>
+
+                <TouchableHighlight onPress={toggleFullscreenLog} style={{
+                    ...bottomLeft,
+                    display: (endScreen) ? 'flex' : 'none',
+                    position: (endScreen) ? 'absolute' : 'relative',
+                }}>
+                    <MaterialCommunityIcons name='arrow-expand' size={1.8*em} color={'white'} />
+                </TouchableHighlight>
+
+                <TouchableHighlight onPress={() => setDisplayMetronome(!displayMetronome)} style={{
+                    ...bottomLeft,
+                    display: (!endScreen) ? 'flex' : 'none',
+                    position: (!endScreen) ? 'absolute' : 'relative',
+                }}>
+                    <MaterialCommunityIcons name={'metronome'} size={1.8*em} color={'white'} />
+                </TouchableHighlight>
+                <View style={{
+                    ...metronomeRow,
+                    display: displayMetronome ? 'flex' : 'none',
+                    position: displayMetronome ? 'absolute' : 'relative',
+                }}>
+                    <TouchableHighlight onPress={() => setBpm(bpm + 4)}>
+                        <Feather name={'plus'} size={1.8*em} color={'white'} />
+                    </TouchableHighlight>
+                    <TouchableHighlight onPress={() => setMetronomeActive(!metronomeActive)}>
+                        <Feather name={metronomeActive ? 'pause' : 'play'} size={1.8*em} color={'white'}/>
+                    </TouchableHighlight>
+                    <TouchableHighlight onPress={() => setBpm(bpm - 4)}>
+                        <Feather name={'minus'} size={1.8*em} color={'white'} />
+                    </TouchableHighlight>
+                    <Text style={{color: 'white', fontSize: 1.4*em}}>{bpm} bpm</Text>
+                </View>
+
+                <OptionList
+                    title={displayOptions.name}
+                    options={displayOptions.options}
+                    visible={displayOptions}
+                    dismiss={() => setDisplayOptions(false)}
+                    select={logEvent}
+                />
+                <OptionInput
+                    visible={displayInput}
+                    multiline={multilineInput}
+                    submit={logEvent}
+                    dismiss={() => setDisplayInput(false)}
+                />
+
+                <Help visible={displayHelp} dismiss={() => {setDisplayHelp(false)}} />
+
+                {endScreen ? (<FullscreenLog events={events} notes={notes} />) : null}
+
             </TimeContext.Provider>
-
-            <TouchableHighlight onPress={() => setDisplayHelp(!displayHelp)} style={bottomRight}>
-                <Feather name={'help-circle'} size={1.8*em} color={'white'} />
-            </TouchableHighlight>
-
-            <TouchableHighlight onPress={toggleFullscreenLog} style={{
-                ...bottomLeft,
-                display: (endScreen) ? 'flex' : 'none',
-                position: (endScreen) ? 'absolute' : 'relative',
-            }}>
-                <MaterialCommunityIcons name='arrow-expand' size={1.8*em} color={'white'} />
-            </TouchableHighlight>
-
-            <TouchableHighlight onPress={() => setDisplayMetronome(!displayMetronome)} style={{
-                ...bottomLeft,
-                display: (!endScreen) ? 'flex' : 'none',
-                position: (!endScreen) ? 'absolute' : 'relative',
-            }}>
-                <MaterialCommunityIcons name={'metronome'} size={1.8*em} color={'white'} />
-            </TouchableHighlight>
-            <View style={{
-                ...metronomeRow,
-                display: displayMetronome ? 'flex' : 'none',
-                position: displayMetronome ? 'absolute' : 'relative',
-            }}>
-                <TouchableHighlight onPress={() => setBpm(bpm + 4)}>
-                    <Feather name={'plus'} size={1.8*em} color={'white'} />
-                </TouchableHighlight>
-                <TouchableHighlight onPress={() => setMetronomeActive(!metronomeActive)}>
-                    <Feather name={metronomeActive ? 'pause' : 'play'} size={1.8*em} color={'white'}/>
-                </TouchableHighlight>
-                <TouchableHighlight onPress={() => setBpm(bpm - 4)}>
-                    <Feather name={'minus'} size={1.8*em} color={'white'} />
-                </TouchableHighlight>
-                <Text style={{color: 'white', fontSize: 1.4*em}}>{bpm} bpm</Text>
-            </View>
-
-            <OptionList
-                title={displayOptions.name}
-                options={displayOptions.options}
-                visible={displayOptions}
-                dismiss={() => setDisplayOptions(false)}
-                select={logEvent}
-            />
-            <OptionInput 
-                visible={displayInput} 
-                multiline={multilineInput} 
-                submit={logEvent} 
-                dismiss={() => setDisplayInput(false)}
-            />
-
-            <Help visible={displayHelp} dismiss={() => {setDisplayHelp(false)}} />
-
-            <FullscreenLog events={events} visible={endScreen} notes={notes} />
         </View>
     );
 }
