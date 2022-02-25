@@ -1,12 +1,15 @@
 import React, {useContext, useEffect, useRef} from 'react';
-import {View, Text, FlatList, ScrollView} from 'react-native';
+import {View, Text, FlatList, ScrollView, TouchableHighlight, Alert} from 'react-native';
+import {MaterialCommunityIcons} from '@expo/vector-icons';
+import {saveToLibraryAsync} from 'expo-media-library';
+import {captureRef} from 'react-native-view-shot';
 
 import StyleContext from '../context/stylecontext';
 import TimeContext from '../context/timecontext';
 import formatTime from '../../util/formattime';
 
 //table header
-const Header = React.memo(() => {
+const Header = () => {
 	console.log('render')
 	const {tableRow, headerCell} = useContext(StyleContext);
 
@@ -17,7 +20,7 @@ const Header = React.memo(() => {
 			<Text style={headerCell}>Time</Text>
 		</View>
 	);
-});
+};
 
 //items in table
 //name: name to display
@@ -52,11 +55,9 @@ const Footer = ({content}) => {
 		return null;
 
 	return (
-		<View style={{paddingBottom: 2*em}}>
 			<Text style={text} dataDetectorTypes={['phoneNumber', 'link', 'address']}>
 				{content}
 			</Text>
-		</View>
 	)
 }
 
@@ -114,8 +115,27 @@ const EventLog = (({events, short, notes}) => {
 });
 
 //fullscreen, scrollview version of EventLog
-const FullscreenLog = (({events, visible, notes}) => {
-	const {em, eventLog, fullscreen} = useContext(StyleContext);
+const FullscreenLog = (({events, dismiss, notes, capture}) => {
+	const {em, eventLog, fullscreen, bottomLeft, ...s} = useContext(StyleContext);
+	const viewShotRef = useRef();
+
+	useEffect(() => {
+		if (capture) {
+			captureRef(viewShotRef.current).then(saveImage);
+		}
+	}, [capture]);
+
+	const saveImage = async (uri) => {
+		try {
+			await saveToLibraryAsync(uri);
+			Alert.alert('Image saved to camera roll');
+			dismiss();
+		}
+		catch (err) {
+			console.log(err);
+			Alert.alert('Failed to save image');
+		}
+	}
 
 	return (
 		<View style={fullscreen}>
@@ -124,15 +144,28 @@ const FullscreenLog = (({events, visible, notes}) => {
 				directionalLockEnabled={true}
 				style={eventLog}
 			>
-				<Header />
-				{events.map((item) => {return (
-					<View key={item.index}>
-						<Separator/>
-						<Row name={item.name} time={item.time}/>
-					</View>
-				)})}
-				<Footer content={notes} />
+				<View ref={viewShotRef} style={{backgroundColor: 'black', flexGrow: 1}}>
+					<Header/>
+					{events.map((item) => {
+						return (
+							<View key={item.index}>
+								<Separator/>
+								<Row name={item.name} time={item.time}/>
+							</View>
+						)
+					})}
+					<Text style={s.text}>
+						Date: {new Date(events[0].time).toLocaleDateString()}
+						{'\n\n'}
+						Notes:
+					</Text>
+					<Footer content={notes}/>
+				</View>
 			</ScrollView>
+
+			<TouchableHighlight onPress={dismiss} style={bottomLeft}>
+				<MaterialCommunityIcons name='arrow-collapse' size={1.8*em} color={'white'} />
+			</TouchableHighlight>
 		</View>
 	);
 });

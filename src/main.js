@@ -1,10 +1,8 @@
 import React, {useState, useEffect, useContext, useRef, useCallback} from 'react';
 import {Text, View, TouchableHighlight, StatusBar, Alert, Platform} from 'react-native';
 import {debounce} from 'debounce';
-import {ViewShot} from 'react-native-view-shot';
 import {useKeepAwake} from 'expo-keep-awake';
 import {Audio} from 'expo-av';
-import {saveToLibraryAsync} from 'expo-media-library';
 import {Feather} from '@expo/vector-icons';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 
@@ -39,7 +37,7 @@ const Main = () => {
 
     //display
     const [actions, setActions] = useState({ //data for input buttons
-        CPR: {color: '#114985', active: -1}, //(-1, 1): start, pause, restart
+        CPR: {color: '#114985', active: -1}, //[-1, 0, 1]: start, pause, restart
         Shock: {color: '#e06924'},
         Epinephrine: {color: '#cca300'},
         Medication: {color: '#898989', list: ['Vasopressin', 'Amiodarone', 'Lidocaine', 'Magnesium Sulfate', 'Other']},
@@ -68,7 +66,7 @@ const Main = () => {
     });
     const [multilineInput, setMultilineInput] = useState(false);
     const [notes, setNotes] = useState(false);
-    const [fullscreened, setFullscreened] = useState(false);
+    const [fullscreenLogStatus, setFullscreenLogStatus] = useState(0); //[0, 1, 2]: hidden, visible, screenshot
 
     /* metronome */
 
@@ -195,7 +193,7 @@ const Main = () => {
         if (endScreen) {
             switch (name) {
                 case 'Save':
-                    //todo
+                    setFullscreenLogStatus(2);
                     break;
                 case 'Resume':
                     setEvents(events.slice(0, events.length - 1));
@@ -266,10 +264,6 @@ const Main = () => {
         }]);
     }
 
-    const toggleFullscreenLog = () => {
-
-    }
-
     //save image of event log
     const saveLog = async () => {
        /* todo
@@ -278,7 +272,8 @@ const Main = () => {
             await saveToLibraryAsync(uri);
             Alert.alert('Image saved to camera roll');
         }
-        catch (err) {console.log(err)}*/
+        catch (err) {console.log(err)}
+        */
     }
 
     return (
@@ -297,7 +292,7 @@ const Main = () => {
                     <Feather name={'help-circle'} size={1.8*em} color={'white'} />
                 </TouchableHighlight>
 
-                <TouchableHighlight onPress={toggleFullscreenLog} style={{
+                <TouchableHighlight onPress={() => setFullscreenLogStatus(true)} style={{
                     ...bottomLeft,
                     display: (endScreen) ? 'flex' : 'none',
                     position: (endScreen) ? 'absolute' : 'relative',
@@ -345,7 +340,14 @@ const Main = () => {
 
                 <Help visible={displayHelp} dismiss={() => {setDisplayHelp(false)}} />
 
-                {endScreen ? (<FullscreenLog events={events} notes={notes} />) : null}
+                {(fullscreenLogStatus !== 0) ? (
+                    <FullscreenLog
+                        events={events}
+                        notes={notes}
+                        dismiss={() => setFullscreenLogStatus(0)}
+                        capture={fullscreenLogStatus === 2}
+                    />
+                ) : null}
 
             </TimeContext.Provider>
         </View>
