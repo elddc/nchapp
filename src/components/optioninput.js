@@ -31,10 +31,6 @@ const OptionInput = ({visible, multiline, submit, dismiss}) => {
 		setText('');
 	}
 
-	const foo = (ev) => {
-		console.log(ev.nativeEvent);
-	}
-
 	return (
 		<Popup
 			visible={visible}
@@ -51,7 +47,6 @@ const OptionInput = ({visible, multiline, submit, dismiss}) => {
 								placeholder={'Type here'}
 								multiline={multiline}
 								autoFocus={true}
-								onSelectionChange={foo}
 							/>
 						</View>
 						<TouchableHighlight onPress={clearText} underlayColor={'transparent'} style={xButton}>

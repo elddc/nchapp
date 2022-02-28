@@ -150,8 +150,6 @@ const Main = () => {
         clearInterval(timeInterval);
         setEndScreen(true);
         setMultilineInput(true);
-        if (events.length === 0)
-            console.log('uh ohhhh')
     }
 
     //start/stop timer

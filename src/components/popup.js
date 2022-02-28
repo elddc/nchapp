@@ -1,5 +1,5 @@
 import React, {useEffect, useState, useContext} from 'react';
-import {TouchableHighlight, Modal, Keyboard} from 'react-native';
+import {TouchableHighlight, Modal, Keyboard, Platform} from 'react-native';
 
 import StyleContext from '../context/stylecontext';
 
@@ -13,13 +13,14 @@ const Popup = ({visible, dismiss, content}) => {
 
 	//add keyboard listener
 	useEffect(() => {
+		console.log('adding keyboard listeners')
 		const listeners = [
-			Keyboard.addListener('keyboardWillShow', () => {
+			Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow', () => {
 				setKeyboardActive(true);
 			}),
-			Keyboard.addListener('keyboardWillHide', () => {
+			Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide', () => {
 				setKeyboardActive(false);
-			}),
+			})
 		];
 		return () => {
 			listeners[0].remove();

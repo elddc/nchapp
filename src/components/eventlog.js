@@ -10,7 +10,6 @@ import formatTime from '../../util/formattime';
 
 //table header
 const Header = () => {
-	console.log('render')
 	const {tableRow, headerCell} = useContext(StyleContext);
 
 	return (
@@ -55,9 +54,9 @@ const Footer = ({content}) => {
 		return null;
 
 	return (
-			<Text style={text} dataDetectorTypes={['phoneNumber', 'link', 'address']}>
-				{content}
-			</Text>
+		<Text style={{...text, lineHeight: 1.5*em}} dataDetectorTypes={['phoneNumber', 'link', 'address']}>
+			{content ? 'Notes:\n' + content : ''}
+		</Text>
 	)
 }
 
@@ -74,11 +73,6 @@ const EventLog = (({events, short, notes}) => {
 		const timeout = setTimeout(scrollToEnd, 30); //allow for render time
 		return () => clearTimeout(timeout);
 	}, [events]);
-
-	useEffect(() => {
-		if (listRef.current)
-		listRef.current.scrollToEnd();
-	}, [notes]);
 
 	//scroll to last item
 	const scrollToEnd = () => {
@@ -105,7 +99,7 @@ const EventLog = (({events, short, notes}) => {
 			stickyHeaderIndices={[0]}
 			directionalLockEnabled={true}
 			onScrollToIndexFailed={() => { //if last item not rendered
-				ref.current.scrollToEnd();
+				listRef.current.scrollToEnd();
 				setTimeout(scrollToEnd, 70);
 			}}
 			style={[eventLog, {marginBottom: short ? 2*em : null}]}
@@ -140,9 +134,8 @@ const FullscreenLog = (({events, dismiss, notes, capture}) => {
 	return (
 		<View style={fullscreen}>
 			<ScrollView
-				stickyHeaderIndices={[0]}
 				directionalLockEnabled={true}
-				style={eventLog}
+				style={{...eventLog, height: 500}}
 			>
 				<View ref={viewShotRef} style={{backgroundColor: 'black', flexGrow: 1}}>
 					<Header/>
@@ -155,9 +148,7 @@ const FullscreenLog = (({events, dismiss, notes, capture}) => {
 						)
 					})}
 					<Text style={s.text}>
-						Date: {new Date(events[0].time).toLocaleDateString()}
-						{'\n\n'}
-						Notes:
+						Date: {new Date(events[0].time).toLocaleDateString() + '\n'}
 					</Text>
 					<Footer content={notes}/>
 				</View>
