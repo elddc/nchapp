@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useRef} from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import {View, Text, FlatList, ScrollView, TouchableHighlight, Alert} from 'react-native';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {saveToLibraryAsync} from 'expo-media-library';
@@ -112,6 +112,7 @@ const EventLog = (({events, short, notes}) => {
 const FullscreenLog = (({events, dismiss, notes, capture}) => {
 	const {em, eventLog, fullscreen, bottomLeft, ...s} = useContext(StyleContext);
 	const viewShotRef = useRef();
+	const [flash, setFlash] = useState(false);
 
 	useEffect(() => {
 		if (capture) {
@@ -119,20 +120,26 @@ const FullscreenLog = (({events, dismiss, notes, capture}) => {
 		}
 	}, [capture]);
 
+	useEffect(() => {
+	    setTimeout(() => setFlash(false), 10)
+	}, [flash]);
+
 	const saveImage = async (uri) => {
+		console.log(uri)
 		try {
 			await saveToLibraryAsync(uri);
-			Alert.alert('Image saved to camera roll');
+			setFlash(true);
+			setTimeout(() => Alert.alert('Image saved to camera roll'), 30);
 			dismiss();
 		}
 		catch (err) {
 			console.log(err);
-			Alert.alert('Failed to save image');
+			Alert.alert('Failed to save image', 'Please try again');
 		}
 	}
 
 	return (
-		<View style={fullscreen}>
+		<View style={{...fullscreen, backgroundColor: flash ? 'white' : 'black'}}>
 			<ScrollView
 				directionalLockEnabled={true}
 				style={{...eventLog, height: 500}}

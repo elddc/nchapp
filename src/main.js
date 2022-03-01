@@ -2,6 +2,7 @@ import React, {useState, useEffect, useContext, useRef, useCallback} from 'react
 import {Text, View, TouchableHighlight, StatusBar, Alert, Platform} from 'react-native';
 import {debounce} from 'debounce';
 import {useKeepAwake} from 'expo-keep-awake';
+import {usePermissions} from 'expo-media-library';
 import {Audio} from 'expo-av';
 import {Feather} from '@expo/vector-icons';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
@@ -67,6 +68,7 @@ const Main = () => {
     const [multilineInput, setMultilineInput] = useState(false);
     const [notes, setNotes] = useState(false);
     const [fullscreenLogStatus, setFullscreenLogStatus] = useState(0); //[0, 1, 2]: hidden, visible, screenshot
+    const [permissions, requestPermissions] = usePermissions();
 
     /* metronome */
 
@@ -168,16 +170,8 @@ const Main = () => {
                 'Are you sure you want to end the timer?',
                 'You cannot undo this action!',
                 [
-                    {
-                        text: 'No',
-                    },
-                    {
-                        text: 'Yes',
-                        style: 'destructive',
-                        onPress: () => {
-                            logEvent('End');
-                        },
-                    },
+                    {text: 'No'},
+                    {text: 'Yes', style: 'destructive', onPress: () => {logEvent('End')}},
                 ],
                 {cancelable: true},
             )
@@ -187,11 +181,26 @@ const Main = () => {
     /* event log */
 
     //add event to event log
-    const logEvent = (name) => {
+    const logEvent = async (name) => {
         if (endScreen) {
             switch (name) {
                 case 'Save':
-                    setFullscreenLogStatus(2);
+                    if (permissions.granted)
+                        setFullscreenLogStatus(2);
+                    else {
+                        const {granted} = await requestPermissions();
+                        if (granted)
+                            setFullscreenLogStatus(2);
+                        else
+                            Alert.alert(
+                                'Cannot save image',
+                                'Please allow camera roll permissions',
+                                [
+                                    {text: 'Cancel', style: 'destructive'},
+                                    {text: 'Try Again', onPress: () => {logEvent('Save')}}
+                                ]
+                            )
+                    }
                     break;
                 case 'Resume':
                     setEvents(events.slice(0, events.length - 1));
