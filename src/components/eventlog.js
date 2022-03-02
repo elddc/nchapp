@@ -50,12 +50,14 @@ const Separator = () => {
 const Footer = ({content}) => {
 	const {text, em} = useContext(StyleContext);
 
+	console.log(content)
+
 	if (!content)
 		return null;
 
 	return (
 		<Text style={{...text, lineHeight: 1.5*em}} dataDetectorTypes={['phoneNumber', 'link', 'address']}>
-			{content ? 'Notes:\n' + content : ''}
+			{content ? ('Notes:\n' + content) : ''}
 		</Text>
 	)
 }
@@ -112,7 +114,7 @@ const EventLog = (({events, short, notes}) => {
 const FullscreenLog = (({events, dismiss, notes, capture}) => {
 	const {em, eventLog, fullscreen, bottomLeft, ...s} = useContext(StyleContext);
 	const viewShotRef = useRef();
-	const [flash, setFlash] = useState(false);
+	const [flash, setFlash] = useState(null);
 
 	useEffect(() => {
 		if (capture) {
@@ -121,16 +123,26 @@ const FullscreenLog = (({events, dismiss, notes, capture}) => {
 	}, [capture]);
 
 	useEffect(() => {
-	    setTimeout(() => setFlash(false), 10)
+		const dismissFlash = async () => {
+			await wait(200);
+			setFlash(null);
+			dismiss();
+			await wait(50);
+			Alert.alert('Image saved to camera roll', '', [{
+				name: 'OK',
+			}]);
+		}
+
+		if (flash)
+			dismissFlash();
 	}, [flash]);
 
 	const saveImage = async (uri) => {
 		console.log(uri)
 		try {
 			await saveToLibraryAsync(uri);
-			setFlash(true);
-			setTimeout(() => Alert.alert('Image saved to camera roll'), 30);
-			dismiss();
+			await wait(30);
+			setFlash(<View style={{...fullscreen, backgroundColor: 'white'}} />);
 		}
 		catch (err) {
 			console.log(err);
@@ -138,19 +150,23 @@ const FullscreenLog = (({events, dismiss, notes, capture}) => {
 		}
 	}
 
+	const wait = (ms) => {
+		return new Promise(resolve => setTimeout(resolve, ms));
+	}
+
 	return (
-		<View style={{...fullscreen, backgroundColor: flash ? 'white' : 'black'}}>
+		<View style={fullscreen}>
 			<ScrollView
 				directionalLockEnabled={true}
-				style={{...eventLog, height: 500}}
+				style={eventLog}
 			>
-				<View ref={viewShotRef} style={{backgroundColor: 'black', flexGrow: 1}}>
+				<View ref={viewShotRef} style={{backgroundColor: 'black', alignSelf: 'center', padding: 1*em}}>
 					<Header/>
 					{events.map((item) => {
 						return (
 							<View key={item.index}>
-								<Separator/>
-								<Row name={item.name} time={item.time}/>
+								<Separator />
+								<Row name={item.name} time={item.time} />
 							</View>
 						)
 					})}
@@ -164,6 +180,8 @@ const FullscreenLog = (({events, dismiss, notes, capture}) => {
 			<TouchableHighlight onPress={dismiss} style={bottomLeft}>
 				<MaterialCommunityIcons name='arrow-collapse' size={1.8*em} color={'white'} />
 			</TouchableHighlight>
+
+			{flash}
 		</View>
 	);
 });

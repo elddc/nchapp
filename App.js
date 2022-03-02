@@ -151,7 +151,7 @@ const App = () => {
 		};
 		const modal = {
 			backgroundColor: 'white',
-			width: 80*vw,
+			width: landscape ? 70*vh : 80*vw,
 			borderRadius: 4*vh,
 			alignSelf: 'center',
 			paddingVertical: 2*vh,
@@ -194,7 +194,7 @@ const App = () => {
 		const horiLine = {
 			borderBottomWidth: StyleSheet.hairlineWidth,
 			borderColor: 'white',
-			width: 95*vw,
+			width: landscape ? 90*vh : 95*vw,
 			alignSelf: 'center',
 		};
 		const textboxContainer = {

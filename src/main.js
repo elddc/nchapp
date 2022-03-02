@@ -181,6 +181,7 @@ const Main = () => {
     /* event log */
 
     //add event to event log
+    //todo make second param for text input
     const logEvent = async (name) => {
         if (endScreen) {
             switch (name) {
@@ -189,6 +190,7 @@ const Main = () => {
                         setFullscreenLogStatus(2);
                     else {
                         const {granted} = await requestPermissions();
+
                         if (granted)
                             setFullscreenLogStatus(2);
                         else
@@ -207,10 +209,17 @@ const Main = () => {
                     startTimer(elaspedTime);
                     break;
                 case 'Clear':
-                    setEndScreen(false);
+                    //reset CPR status
+                    let prevActions = {...actions};
+                    prevActions['CPR'] = {...actions.CPR, active: -1};
+                    setActions(prevActions);
+
+                    //reset other items
                     setNotes(false);
                     setEvents([]);
                     setElapsedTime(0);
+
+                    setEndScreen(false);
                     break;
                 case 'Notes':
                     setDisplayInput(true);
@@ -230,11 +239,6 @@ const Main = () => {
             setActions(prevActions);
         }
         else if (name === 'End') {
-            //reset CPR status
-            let prevActions = {...actions};
-            prevActions['CPR'] = {...actions.CPR, active: -1};
-            setActions(prevActions);
-
             //turn off metronome
             setDisplayMetronome(false);
             setMetronomeActive(false);

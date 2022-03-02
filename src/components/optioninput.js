@@ -12,7 +12,7 @@ import Popup from './popup';
 //submit: onPress callback
 //dismiss: function to hide component
 const OptionInput = ({visible, multiline, submit, dismiss}) => {
-	const {em, vh, textboxContainer, textbox, buttonText, xButton, dialogButton, row} = useContext(StyleContext);
+	const {landscape, em, vh, vw, textboxContainer, textbox, buttonText, xButton, dialogButton, row} = useContext(StyleContext);
 	const [text, setText] = useState(''); //user entered text
 
 	//clear input when input switches from single to multi-line text
@@ -38,7 +38,7 @@ const OptionInput = ({visible, multiline, submit, dismiss}) => {
 			content={
 				<View>
 					<View style={textboxContainer}>
-						<View style={{maxHeight: 30*vh}}>
+						<View style={{maxHeight: landscape? 20*vw : 30*vh}}>
 							<TextInput
 								value={text}
 								onChangeText={setText}
