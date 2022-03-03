@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useContext, useRef, useCallback} from 'react';
+import React, {useState, useEffect, useContext, useCallback} from 'react';
 import {Text, View, TouchableHighlight, StatusBar, Alert, Platform} from 'react-native';
 import {debounce} from 'debounce';
 import {useKeepAwake} from 'expo-keep-awake';
@@ -19,8 +19,8 @@ import ActionButtons from './components/actionbuttons';
 
 //core app
 const Main = () => {
-    //prevent device from sleeping
-    useKeepAwake();
+    useKeepAwake(); //prevent device from sleeping
+    const [permissions, requestPermissions] = usePermissions(); //access to camera roll (for saving image of log)
 
     //styles
     const {landscape, em, vh, container, main, bottomRight, bottomLeft, metronomeRow} = useContext(StyleContext);
@@ -47,7 +47,7 @@ const Main = () => {
                 'Oxygen', 'IV access', 'IO access', 'Advanced airway: Supraglottic airway',
                 'Advanced airway: Endotracheal intubation', 'Waveform capnography', 'OPA (oropharyngeal airway)',
                 'NPA (nasopharyngeal airway)', 'Backboard', 'Defibrillator: Pads applied', 'Other'
-            ],},
+            ]},
         ROSC: {color: '#784124'},
         Other: {enterText: true},
     });
@@ -65,12 +65,12 @@ const Main = () => {
         Resume: {color: '#174b9e'},
         Clear: {color: '#dc2c1f'},
     });
-    const [multilineInput, setMultilineInput] = useState(false);
-    const [notes, setNotes] = useState(false);
-    const [fullscreenLogStatus, setFullscreenLogStatus] = useState(0); //[0, 1, 2]: hidden, visible, screenshot
-    const [permissions, requestPermissions] = usePermissions();
+    const [multilineInput, setMultilineInput] = useState(false); //whether text input is multiline
+    const [notes, setNotes] = useState(false); //user input text (notes)
+    const [fullscreenLogStatus, setFullscreenLogStatus] = useState(0); //fullscreen mode [0, 1, 2]: hidden, visible, screenshot
 
-    /* metronome */
+
+    /* metronome -------------------------------------------------- */
 
     //load metronome sound
     useEffect(() => {
@@ -90,12 +90,14 @@ const Main = () => {
     //toggle metronome sound
     useEffect(() => {
         if (player) {
-            if (metronomeActive)
+            if (endScreen) //pause on endscreen; allows for automatic resume
+                player.pauseAsync();
+            else if (metronomeActive)
                 player.playAsync();
             else
                 player.pauseAsync();
         }
-    }, [metronomeActive, player]);
+    }, [metronomeActive, player, endScreen]);
 
     //cleanup
     useEffect(() => {
@@ -120,7 +122,7 @@ const Main = () => {
             player.pauseAsync();
     }, 200, true), [player]);
 
-    //change playback rate to match bpm, resume metronome
+    //change playback rate to match bpm then resume metronome
     //rate: new playback rate; passed as param to avoid bpm dependency interfering with debounce
     const debouncedChangeBpm = useCallback(debounce(async (rate) => {
         if (player) {
@@ -130,39 +132,38 @@ const Main = () => {
         }
     }, 200), [player, metronomeActive]);
 
-    /* timer */
+
+    /* timer -------------------------------------------------- */
 
     //start timer, optionally w/ elapsed time
     const startTimer = (elapsed = 0) => {
-        let time = Date.now() - elapsed;
+        let start = Date.now() - elapsed;
 
         setTimerActive(true);
-        setStartTime(time);
-        setEndScreen(false);
-        setNotes(false);
-        setMultilineInput(false);
+        setStartTime(start);
+
         setTimeInterval(setInterval(() => {
             //get accurate time elapsed by comparing to start time
-            setElapsedTime(Date.now() - time);
+            setElapsedTime(Date.now() - start);
         }, 250));
     }
 
+    //ends timer and opens end screen
     const endTimer = () => {
         setTimerActive(false);
         clearInterval(timeInterval);
+
         setEndScreen(true);
         setMultilineInput(true);
     }
 
     //start/stop timer
+    //auto: skip confirmation dialog
     const toggleTimer = (auto = false) => {
         if (!timerActive) {
             logEvent('Start');
         }
-        else if (auto) { //skip confirm dialog
-            logEvent('End');
-        }
-        else if (Platform.OS === 'web' && confirm('Are you sure you want to end the timer?')) {
+        else if (auto || (Platform.OS === 'web' && confirm('Are you sure you want to end the timer?'))) {
             logEvent('End');
         }
         else {
@@ -178,22 +179,33 @@ const Main = () => {
         }
     };
 
-    /* event log */
+    /* event log -------------------------------------------------- */
 
     //add event to event log
-    //todo make second param for text input
-    const logEvent = async (name) => {
+    //name: name of event
+    //input: if user input text
+    //todo: save notes when resuming?
+    const logEvent = async (name, input = false) => {
+        //end screen only ----------
         if (endScreen) {
+            //set notes
+            if (input) {
+                setNotes(name);
+                return;
+            }
+
+            //button actions
             switch (name) {
-                case 'Save':
+                case 'Save': //save image of event log
+                    //must have camera roll permissions
                     if (permissions.granted)
-                        setFullscreenLogStatus(2);
+                        setFullscreenLogStatus(2); //take screenshot
                     else {
                         const {granted} = await requestPermissions();
 
                         if (granted)
                             setFullscreenLogStatus(2);
-                        else
+                        else //permissions not granted
                             Alert.alert(
                                 'Cannot save image',
                                 'Please allow camera roll permissions',
@@ -204,11 +216,16 @@ const Main = () => {
                             )
                     }
                     break;
-                case 'Resume':
-                    setEvents(events.slice(0, events.length - 1));
+                case 'Resume': //resume timer, keeping events
+                    //resetting variables
+                    setEvents(events.slice(0, events.length - 1)); //remove "End" event
+                    setEndScreen(false);
+                    setNotes(false);
+                    setMultilineInput(false);
+
                     startTimer(elaspedTime);
                     break;
-                case 'Clear':
+                case 'Clear': //restart timer, clearing events
                     //reset CPR status
                     let prevActions = {...actions};
                     prevActions['CPR'] = {...actions.CPR, active: -1};
@@ -218,31 +235,30 @@ const Main = () => {
                     setNotes(false);
                     setEvents([]);
                     setElapsedTime(0);
-
+                    setDisplayMetronome(false);
+                    setMetronomeActive(false);
                     setEndScreen(false);
                     break;
-                case 'Notes':
+                case 'Notes': //open text input
                     setDisplayInput(true);
                     break;
-                default:
-                   setNotes(name);
+                default: //catch
+                   console.log(name + ' is not an option');
             }
 
             return;
         }
 
+        //not end screen ----------
+
         //handle special events
-        if (name.includes('CPR')) { //name is not always key in actions!
+        if (name.includes('CPR')) {
             //toggle CPR status
             let prevActions = {...actions};
             prevActions['CPR'] = {...actions.CPR, active: (actions.CPR.active < 1 ? 1 : 0)};
             setActions(prevActions);
         }
         else if (name === 'End') {
-            //turn off metronome
-            setDisplayMetronome(false);
-            setMetronomeActive(false);
-
             //stop timer
             endTimer();
         }
@@ -320,8 +336,8 @@ const Main = () => {
                 </TouchableHighlight>
                 <View style={{
                     ...metronomeRow,
-                    display: displayMetronome ? 'flex' : 'none',
-                    position: displayMetronome ? 'absolute' : 'relative',
+                    display: displayMetronome && !endScreen ? 'flex' : 'none',
+                    position: displayMetronome && !endScreen ? 'absolute' : 'relative',
                 }}>
                     <TouchableHighlight onPress={() => setBpm(bpm + 4)}>
                         <Feather name={'plus'} size={1.8*em} color={'white'} />

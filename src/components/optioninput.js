@@ -22,7 +22,7 @@ const OptionInput = ({visible, multiline, submit, dismiss}) => {
 
 	//send text to event log and close popup
 	const submitText = () => {
-		submit(text);
+		submit(text, true);
 		dismiss();
 	}
 
