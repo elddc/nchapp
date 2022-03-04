@@ -135,9 +135,9 @@ const Main = () => {
 
     /* timer -------------------------------------------------- */
 
-    //start timer, optionally w/ elapsed time
-    const startTimer = (elapsed = 0) => {
-        let start = Date.now() - elapsed;
+    //start or resume time
+    const startTimer = (resume) => {
+        let start = resume ? startTime : Date.now();
 
         setTimerActive(true);
         setStartTime(start);
@@ -223,7 +223,7 @@ const Main = () => {
                     setNotes(false);
                     setMultilineInput(false);
 
-                    startTimer(elaspedTime);
+                    startTimer(true);
                     break;
                 case 'Clear': //restart timer, clearing events
                     //reset CPR status
