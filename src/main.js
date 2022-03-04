@@ -135,8 +135,8 @@ const Main = () => {
 
     /* timer -------------------------------------------------- */
 
-    //start or resume time
-    const startTimer = (resume) => {
+    //start or resume timer
+    const startTimer = (resume = false) => {
         let start = resume ? startTime : Date.now();
 
         setTimerActive(true);
@@ -233,11 +233,13 @@ const Main = () => {
 
                     //reset other items
                     setNotes(false);
+                    setMultilineInput(false);
                     setEvents([]);
                     setElapsedTime(0);
                     setDisplayMetronome(false);
                     setMetronomeActive(false);
                     setEndScreen(false);
+
                     break;
                 case 'Notes': //open text input
                     setDisplayInput(true);

@@ -47,18 +47,21 @@ const Separator = () => {
 }
 
 //displays additional notes
-const Footer = ({content}) => {
-	const {text, em} = useContext(StyleContext);
-
-	console.log(content)
-
-	if (!content)
-		return null;
+const Footer = ({content, date}) => {
+	const {em, text, horiLine} = useContext(StyleContext);
 
 	return (
-		<Text style={{...text, lineHeight: 1.5*em}} dataDetectorTypes={['phoneNumber', 'link', 'address']}>
-			{content ? ('Notes:\n' + content) : ''}
-		</Text>
+		<View style={{width: horiLine.width, alignSelf: date ? 'center' : null}}>
+			{date ? (
+				<Text style={text}>Date: {date.toLocaleDateString() + '\n'}</Text>
+			) : null}
+
+			{content ? (
+				<Text style={{...text, lineHeight: 1.5 * em}} dataDetectorTypes={['phoneNumber', 'link', 'address']}>
+					{content ? ('Notes:\n' + content) : ''}
+				</Text>
+			) : null}
+		</View>
 	)
 }
 
@@ -112,7 +115,7 @@ const EventLog = (({events, short, notes}) => {
 
 //fullscreen, scrollview version of EventLog
 const FullscreenLog = (({events, dismiss, notes, capture}) => {
-	const {em, eventLog, fullscreen, bottomLeft, ...s} = useContext(StyleContext);
+	const {em, eventLog, fullscreen, bottomLeft} = useContext(StyleContext);
 	const viewShotRef = useRef();
 	const [flash, setFlash] = useState(null);
 
@@ -124,10 +127,10 @@ const FullscreenLog = (({events, dismiss, notes, capture}) => {
 
 	useEffect(() => {
 		const dismissFlash = async () => {
-			await wait(200);
+			await wait(180);
 			setFlash(null);
 			dismiss();
-			await wait(50);
+			await wait(120);
 			Alert.alert('Image saved to camera roll', '', [{
 				name: 'OK',
 			}]);
@@ -141,7 +144,7 @@ const FullscreenLog = (({events, dismiss, notes, capture}) => {
 		console.log(uri)
 		try {
 			await saveToLibraryAsync(uri);
-			await wait(30);
+			await wait(10);
 			setFlash(<View style={{...fullscreen, backgroundColor: 'white'}} />);
 		}
 		catch (err) {
@@ -160,7 +163,7 @@ const FullscreenLog = (({events, dismiss, notes, capture}) => {
 				directionalLockEnabled={true}
 				style={eventLog}
 			>
-				<View ref={viewShotRef} style={{backgroundColor: 'black', alignSelf: 'center', padding: 1*em}}>
+				<View ref={viewShotRef} style={{backgroundColor: 'black', alignSelf: 'center', paddingVertical: em}}>
 					<Header/>
 					{events.map((item) => {
 						return (
@@ -170,10 +173,7 @@ const FullscreenLog = (({events, dismiss, notes, capture}) => {
 							</View>
 						)
 					})}
-					<Text style={s.text}>
-						Date: {new Date(events[0].time).toLocaleDateString() + '\n'}
-					</Text>
-					<Footer content={notes}/>
+					<Footer content={notes} date={new Date(events[0].time)} />
 				</View>
 			</ScrollView>
 

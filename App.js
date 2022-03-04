@@ -125,6 +125,7 @@ const App = () => {
 		};
 		const eventLog = {
 			marginVertical: em,
+			width: '100%',
 		};
 		const bottomRight = {
 			position: 'absolute',
