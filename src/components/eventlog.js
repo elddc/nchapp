@@ -41,12 +41,12 @@ const Row = ({name, time}) => {
 const Separator = () => {
 	const {horiLine} = useContext(StyleContext);
 
-	return (
-		<View style={horiLine} />
-	)
+	return (<View style={horiLine} />);
 }
 
 //displays additional notes
+//content: text to display under "notes", optional
+//date: Date object to display, optional
 const Footer = ({content, date}) => {
 	const {em, text, horiLine} = useContext(StyleContext);
 
@@ -62,13 +62,12 @@ const Footer = ({content, date}) => {
 				</Text>
 			) : null}
 		</View>
-	)
+	);
 }
 
 //full table
 //events: data to display
 //short: whether to make list height smaller to accomodate other elements
-//ref: ref to flatlist, used in auto-scroll as well
 const EventLog = (({events, short, notes}) => {
 	const {em, eventLog} = useContext(StyleContext);
 	const listRef = useRef();
@@ -100,7 +99,7 @@ const EventLog = (({events, short, notes}) => {
 			keyExtractor={item => item.index}
 			ListHeaderComponent={Header}
 			ItemSeparatorComponent={Separator}
-			ListFooterComponent={<Footer content={notes} />}
+			ListFooterComponent={<Footer />}
 			stickyHeaderIndices={[0]}
 			directionalLockEnabled={true}
 			onScrollToIndexFailed={() => { //if last item not rendered

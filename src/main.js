@@ -184,8 +184,7 @@ const Main = () => {
     //add event to event log
     //name: name of event
     //input: if user input text
-    //todo: save notes when resuming?
-    const logEvent = async (name, input = false) => {
+    const logEvent = (name, input = false) => {
         //end screen only ----------
         if (endScreen) {
             //set notes
@@ -197,25 +196,29 @@ const Main = () => {
             //button actions
             switch (name) {
                 case 'Save': //save image of event log
+                    if (Platform.OS === 'web') {
+                        alert('This feature is not available on web');
+                    }
+
                     //must have camera roll permissions
                     if (permissions.granted)
                         setFullscreenLogStatus(2); //take screenshot
-                    else {
-                        const {granted} = await requestPermissions();
-
-                        if (granted)
-                            setFullscreenLogStatus(2);
-                        else //permissions not granted
-                            Alert.alert(
-                                'Cannot save image',
-                                'Please allow camera roll permissions',
-                                [
-                                    {text: 'Cancel', style: 'destructive'},
-                                    {text: 'Try Again', onPress: () => {logEvent('Save')}}
-                                ]
-                            )
-                    }
+                    else
+                        requestPermissions().then(({granted}) => {
+                            if (granted)
+                                setFullscreenLogStatus(2);
+                            else //permissions not granted
+                                Alert.alert(
+                                    'Cannot save image',
+                                    'Please allow camera roll permissions',
+                                    [
+                                        {text: 'Cancel', style: 'destructive'},
+                                        {text: 'Try Again', onPress: () => {logEvent('Save')}}
+                                    ]
+                                )
+                        });
                     break;
+
                 case 'Resume': //resume timer, keeping events
                     //resetting variables
                     setEvents(events.slice(0, events.length - 1)); //remove "End" event
@@ -225,6 +228,7 @@ const Main = () => {
 
                     startTimer(true);
                     break;
+
                 case 'Clear': //restart timer, clearing events
                     //reset CPR status
                     let prevActions = {...actions};
@@ -241,9 +245,11 @@ const Main = () => {
                     setEndScreen(false);
 
                     break;
+
                 case 'Notes': //open text input
                     setDisplayInput(true);
                     break;
+
                 default: //catch
                    console.log(name + ' is not an option');
             }
@@ -251,7 +257,7 @@ const Main = () => {
             return;
         }
 
-        //not end screen ----------
+        //main screen ----------
 
         //handle special events
         if (name.includes('CPR')) {
@@ -277,7 +283,8 @@ const Main = () => {
 
         //get event log
         let previousEvents;
-        if (!timerActive) { //start code
+        if (!timerActive) {
+            //start code
             startTimer();
             previousEvents = (name === 'Start') ? [] : [{name: 'Start', time: Date.now(), index: 0}];
         }
@@ -291,18 +298,6 @@ const Main = () => {
             time: Date.now(),
             index: previousEvents.length, //used as key in flatlist
         }]);
-    }
-
-    //save image of event log
-    const saveLog = async () => {
-       /* todo
-       try {
-            const uri = await captureRef(eventLogRef.current);
-            await saveToLibraryAsync(uri);
-            Alert.alert('Image saved to camera roll');
-        }
-        catch (err) {console.log(err)}
-        */
     }
 
     return (
