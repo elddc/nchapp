@@ -5,8 +5,8 @@ import {Feather} from "@expo/vector-icons";
 import StyleContext from '../context/stylecontext';
 
 //item in list of events; pressable
-//name: text to display
-//select: onPress callback
+	//name: text to display
+	//select: onPress callback
 const Option = ({name, select}) => {
 	const {option, optionText} = useContext(StyleContext);
 
@@ -18,15 +18,15 @@ const Option = ({name, select}) => {
 }
 
 //fullscreen list of events
-//title: text to display at top of screen
-//options: names of items in list
-//dismiss: function to hide component
-//select: onPress callback
-const OptionList = ({title, options, visible, dismiss, select}) => {
+	//title: text to display at top of screen
+	//options: names of items in list
+	//dismiss: function to hide component
+	//select: onPress callback
+const OptionList = ({title, options, dismiss, select}) => {
 	const {em, fullscreen, hidden, header, headerText} = useContext(StyleContext);
 
 	return (
-		<View style={visible ? fullscreen : hidden}>
+		<View style={title ? fullscreen : hidden}>
 			<FlatList
 				style={{width: '100%'}}
 				data={options}

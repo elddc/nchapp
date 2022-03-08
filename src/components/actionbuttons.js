@@ -4,8 +4,8 @@ import {Text, TouchableHighlight, View} from 'react-native';
 import StyleContext from '../context/stylecontext';
 
 //group of buttons used to log events
-//actions: data used to generate buttons
-//logEvent: onPress callback
+	//actions: data used to generate buttons
+	//logEvent: onPress callback
 const ActionButtons = ({actions, logEvent}) => {
 	const {wrapRow, actionButton, buttonText} = useContext(StyleContext);
 

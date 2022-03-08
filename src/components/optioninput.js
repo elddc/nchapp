@@ -1,4 +1,4 @@
-import React, {useState, useContext, useEffect} from 'react';
+import React, {useState, useContext} from 'react';
 import {View, Text, TextInput, TouchableHighlight} from 'react-native';
 import {Feather} from '@expo/vector-icons';
 
@@ -16,8 +16,7 @@ const OptionInput = ({visible, multiline, submit, dismiss}) => {
 
 	//send text to event log and close popup
 	const submitText = () => {
-		console.log(multiline ? multiText : singleText);
-		submit((multiline ? multiText : singleText), true);
+		submit(multiline ? multiText : singleText, true);
 		dismiss();
 	}
 
