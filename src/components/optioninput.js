@@ -5,30 +5,28 @@ import {Feather} from '@expo/vector-icons';
 import StyleContext from '../context/stylecontext';
 import Popup from './popup';
 
-//todo check position on devices of differing screen sizes for button visibility
-
 //text input dialog
-//visible: whether component should display
-//submit: onPress callback
-//dismiss: function to hide component
+	//visible: whether component should display
+	//submit: onPress callback
+	//dismiss: function to hide component
 const OptionInput = ({visible, multiline, submit, dismiss}) => {
 	const {landscape, em, vh, vw, textboxContainer, textbox, buttonText, xButton, dialogButton, row} = useContext(StyleContext);
-	const [text, setText] = useState(''); //user entered text
-
-	//clear input when input switches from single to multi-line text
-	useEffect(() => {
-	    clearText();
-	}, [multiline]);
+	const [singleText, setSingleText] = useState(''); //user entered text, single line
+	const [multiText, setMultiText] = useState(''); //user entered text, multi line
 
 	//send text to event log and close popup
 	const submitText = () => {
-		submit(text, true);
+		console.log(multiline ? multiText : singleText);
+		submit((multiline ? multiText : singleText), true);
 		dismiss();
 	}
 
 	//clear text input
 	const clearText = () => {
-		setText('');
+		if (multiline)
+			setMultiText('');
+		else
+			setSingleText('')
 	}
 
 	return (
@@ -39,15 +37,25 @@ const OptionInput = ({visible, multiline, submit, dismiss}) => {
 				<View>
 					<View style={textboxContainer}>
 						<View style={{maxHeight: landscape? 20*vw : 30*vh}}>
-							<TextInput
-								value={text}
-								onChangeText={setText}
-								onSubmitEditing={multiline ? null : submitText}
-								style={textbox}
-								placeholder={'Type here'}
-								multiline={multiline}
-								autoFocus={true}
-							/>
+							{multiline ? (
+								<TextInput
+									value={multiText}
+									onChangeText={setMultiText}
+									multiline={multiline}
+									style={textbox}
+									placeholder={'Type here'}
+									autoFocus={true}
+								/>
+							) : (
+								<TextInput
+									value={singleText}
+									onChangeText={setSingleText}
+									onSubmitEditing={submitText}
+									style={textbox}
+									placeholder={'Type here'}
+									autoFocus={true}
+								/>
+							)}
 						</View>
 						<TouchableHighlight onPress={clearText} underlayColor={'transparent'} style={xButton}>
 						    <Feather name={'x'} size={1.5 * em} color={'black'} />

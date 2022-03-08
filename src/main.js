@@ -123,7 +123,7 @@ const Main = () => {
     }, 200, true), [player]);
 
     //change playback rate to match bpm then resume metronome
-    //rate: new playback rate; passed as param to avoid bpm dependency interfering with debounce
+        //rate: new playback rate; passed as param to avoid bpm dependency interfering with debounce
     const debouncedChangeBpm = useCallback(debounce(async (rate) => {
         if (player) {
             await player.setStatusAsync({rate});
@@ -158,7 +158,7 @@ const Main = () => {
     }
 
     //start/stop timer
-    //auto: skip confirmation dialog
+        //auto: skip confirmation dialog
     const toggleTimer = (auto = false) => {
         if (!timerActive) {
             logEvent('Start');
@@ -182,8 +182,8 @@ const Main = () => {
     /* event log -------------------------------------------------- */
 
     //add event to event log
-    //name: name of event
-    //input: if user input text
+        //name: name of event
+        //input: if user input text
     const logEvent = (name, input = false) => {
         //end screen only ----------
         if (endScreen) {
@@ -223,7 +223,6 @@ const Main = () => {
                     //resetting variables
                     setEvents(events.slice(0, events.length - 1)); //remove "End" event
                     setEndScreen(false);
-                    setNotes(false);
                     setMultilineInput(false);
 
                     startTimer(true);

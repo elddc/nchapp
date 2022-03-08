@@ -22,8 +22,8 @@ const Header = () => {
 };
 
 //items in table
-//name: name to display
-//time: timestamp
+	//name: name to display
+	//time: timestamp in ms
 const Row = ({name, time}) => {
 	const {tableRow, cell} = useContext(StyleContext);
 	const startTime = useContext(TimeContext);
@@ -45,8 +45,8 @@ const Separator = () => {
 }
 
 //displays additional notes
-//content: text to display under "notes", optional
-//date: Date object to display, optional
+	//content: optional text to display under "notes"
+	//date: optional Date object to display
 const Footer = ({content, date}) => {
 	const {em, text, horiLine} = useContext(StyleContext);
 
@@ -66,8 +66,9 @@ const Footer = ({content, date}) => {
 }
 
 //full table
-//events: data to display
-//short: whether to make list height smaller to accomodate other elements
+	//events: data to display
+	//short: whether to make list height smaller to accomodate other elements
+	//notes: optional text to display at bottom
 const EventLog = (({events, short, notes}) => {
 	const {em, eventLog} = useContext(StyleContext);
 	const listRef = useRef();
@@ -75,15 +76,18 @@ const EventLog = (({events, short, notes}) => {
 	//automatically scroll to end of list after new items added
 	useEffect(() => {
 		const timeout = setTimeout(scrollToEnd, 30); //allow for render time
-		return () => clearTimeout(timeout);
+		return () => clearTimeout(timeout); //cleanup
 	}, [events]);
 
 	//scroll to last item
 	const scrollToEnd = () => {
+		//uses scrollToIndex over scrollToEnd for accuracy
+		//(variable height of items means getItemLayout cannot be used)
+		//see onScrollToIndexFailed for handling items outside the render window
 		if (listRef.current)
 			listRef.current.scrollToIndex({
 				index: events.length - 1, //same as key
-				viewPosition: 1,
+				viewPosition: 1, //item at bottom
 			});
 	}
 
@@ -99,7 +103,7 @@ const EventLog = (({events, short, notes}) => {
 			keyExtractor={item => item.index}
 			ListHeaderComponent={Header}
 			ItemSeparatorComponent={Separator}
-			ListFooterComponent={<Footer />}
+			ListFooterComponent={<Footer content={notes} />}
 			stickyHeaderIndices={[0]}
 			directionalLockEnabled={true}
 			onScrollToIndexFailed={() => { //if last item not rendered
@@ -112,24 +116,32 @@ const EventLog = (({events, short, notes}) => {
 	);
 });
 
-//fullscreen, scrollview version of EventLog
+//fullscreen, scrollview, screenshot-capable version of EventLog (does not have auto-scroll)
+	//events: data to display
+	//dismiss: function to hide screen
+	//notes: optional text to display at bottom
+	//capture: whether to take screenshow
 const FullscreenLog = (({events, dismiss, notes, capture}) => {
 	const {em, eventLog, fullscreen, bottomLeft} = useContext(StyleContext);
 	const viewShotRef = useRef();
 	const [flash, setFlash] = useState(null);
 
+	//take screenshot
 	useEffect(() => {
 		if (capture) {
 			captureRef(viewShotRef.current).then(saveImage);
 		}
 	}, [capture]);
 
+	//hide screen and display alert
 	useEffect(() => {
 		const dismissFlash = async () => {
+			//flash animation
 			await wait(180);
 			setFlash(null);
 			dismiss();
 			await wait(120);
+
 			Alert.alert('Image saved to camera roll', '', [{
 				name: 'OK',
 			}]);
@@ -139,8 +151,8 @@ const FullscreenLog = (({events, dismiss, notes, capture}) => {
 			dismissFlash();
 	}, [flash]);
 
+	//save screenshot to camera roll and display flash
 	const saveImage = async (uri) => {
-		console.log(uri)
 		try {
 			await saveToLibraryAsync(uri);
 			await wait(10);
@@ -152,6 +164,7 @@ const FullscreenLog = (({events, dismiss, notes, capture}) => {
 		}
 	}
 
+	//sleep for ms
 	const wait = (ms) => {
 		return new Promise(resolve => setTimeout(resolve, ms));
 	}
