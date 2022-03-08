@@ -259,25 +259,27 @@ const Main = () => {
         //main screen ----------
 
         //handle special events
-        if (name.includes('CPR')) {
-            //toggle CPR status
-            let prevActions = {...actions};
-            prevActions['CPR'] = {...actions.CPR, active: (actions.CPR.active < 1 ? 1 : 0)};
-            setActions(prevActions);
-        }
-        else if (name === 'End') {
-            //stop timer
-            endTimer();
-        }
-        else if (name === 'Other') {
-            //open text input
-            setDisplayInput(true);
-            return;
-        }
-        else if (actions[name] && actions[name].list) {
-            //open list of options stored in actions
-            setDisplayOptions({name, options: actions[name].list});
-            return;
+        if (!input) {
+            if (name.includes('CPR')) {
+                //toggle CPR status
+                let prevActions = {...actions};
+                prevActions['CPR'] = {...actions.CPR, active: (actions.CPR.active < 1 ? 1 : 0)};
+                setActions(prevActions);
+            }
+            else if (name === 'End') {
+                //stop timer
+                endTimer();
+            }
+            else if (name === 'Other') {
+                //open text input
+                setDisplayInput(true);
+                return;
+            }
+            else if (actions[name] && actions[name].list) {
+                //open list of options stored in actions
+                setDisplayOptions({name, options: actions[name].list});
+                return;
+            }
         }
 
         //get event log
@@ -350,7 +352,6 @@ const Main = () => {
                 <OptionList
                     title={displayOptions.name}
                     options={displayOptions.options}
-                    visible={displayOptions}
                     dismiss={() => setDisplayOptions(false)}
                     select={logEvent}
                 />
