@@ -1,5 +1,5 @@
-import React, {useContext} from 'react';
-import {Text} from 'react-native';
+import React, {useState, useContext} from 'react';
+import {Text, Image, View} from 'react-native';
 
 import StyleContext from '../context/stylecontext';
 import Popup from './popup'
@@ -9,17 +9,47 @@ import Popup from './popup'
 //dismiss: function to hide component
 const Help = ({visible, dismiss}) => {
 	const {modalText} = useContext(StyleContext);
+	const [cardData, setCardData] = useState([
+		{
+			path: require('../assets/help/timer.png'),
+			text: 'Tap once to start the timer, and long press to stop.'
+		}, {
+			path: require('../assets/help/actions.png'),
+			text: 'Tap any of the buttons to log an event. Some buttons will open an additional input screen.'
+		}, {
+			path: require('../assets/help/list.png'),
+			text: 'Tap any of the options to add it to the event log, or tap the top to go back.'
+		}, {
+			path: require('../assets/help/textbox.png'),
+			text: 'Tapping "other" on any screen will open a text input. Type text to add to the log.'
+		}, {
+			path: require('../assets/help/bottom.png'),
+			text: 'Additional helpers are available on the bottom of the screen.\n' +
+				'The metronome button opens the metronome bar, where you can play/pause the metronome, and change the BPM.\n' +
+				'After the timer ends, it willl be replaced by the expand button, which enlarges the event log.\n' +
+				'The help button opens this display.'
+		}, {
+			path: require('../assets/help/endactions.png'),
+			text: 'After the timer ends, these actions will be available.\n' +
+				'Tap "Notes" to enter additional text, added to the end of the event log.\n' +
+				'Tap "Save" to save an image of the event log to the camera roll.\n' +
+				'Tap "Resume" to go back and resume the timer.\n' +
+				'Tap "Clear" to reset the timer and return to the main screen.'
+		}
+	]);
+
+	if (!cardData)
+		return null;
 
 	return (
-		<Popup
-			visible={visible}
-			dismiss={dismiss}
-			content={
+		<Popup visible={visible} dismiss={dismiss}>
+			<View>
+				<View style={{backgroundColor: 'red'}}><Image style={{width: '100%'}} resizeMode={'contain'} source={cardData[0].path}/></View>
 				<Text style={modalText}>
-					{'Tap the timer to start, and long press to stop.\nTap any of the buttons to log an event.\n\nTap the metronome icon to open and close the metronome controls, where you can play/pause sound and change the BPM.'}
+					{cardData[0].text}
 				</Text>
-			}
-		/>
+			</View>
+		</Popup>
 	);
 }
 

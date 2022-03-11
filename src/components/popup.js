@@ -7,7 +7,7 @@ import StyleContext from '../context/stylecontext';
 	//visible: whether component should display
 	//dismiss: function to hide component
 	//content: inner part of component
-const Popup = ({visible, dismiss, content}) => {
+const Popup = ({visible, dismiss, children}) => {
 	const {em, overlay, modal} = useContext(StyleContext);
 	const [keyboardActive, setKeyboardActive] = useState(false); //whether keyboard is open
 
@@ -37,7 +37,7 @@ const Popup = ({visible, dismiss, content}) => {
 		>
 			<TouchableHighlight onPress={dismiss} style={overlay} underlayColor={'transparent'}>
 				<TouchableHighlight style={{...modal, marginBottom: keyboardActive ? 18*em : 0}}>
-					{content}
+					{children}
 				</TouchableHighlight>
 			</TouchableHighlight>
 		</Modal>

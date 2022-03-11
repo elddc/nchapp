@@ -29,48 +29,44 @@ const OptionInput = ({visible, multiline, submit, dismiss}) => {
 	}
 
 	return (
-		<Popup
-			visible={visible}
-			dismiss={dismiss}
-			content={
-				<View>
-					<View style={textboxContainer}>
-						<View style={{maxHeight: landscape? 20*vw : 30*vh}}>
-							{multiline ? (
-								<TextInput
-									value={multiText}
-									onChangeText={setMultiText}
-									multiline={multiline}
-									style={textbox}
-									placeholder={'Type here'}
-									autoFocus={true}
-								/>
-							) : (
-								<TextInput
-									value={singleText}
-									onChangeText={setSingleText}
-									onSubmitEditing={submitText}
-									style={textbox}
-									placeholder={'Type here'}
-									autoFocus={true}
-								/>
-							)}
-						</View>
-						<TouchableHighlight onPress={clearText} underlayColor={'transparent'} style={xButton}>
-						    <Feather name={'x'} size={1.5 * em} color={'black'} />
-						</TouchableHighlight>
+		<Popup visible={visible} dismiss={dismiss}>
+			<View>
+				<View style={textboxContainer}>
+					<View style={{maxHeight: landscape? 20*vw : 30*vh}}>
+						{multiline ? (
+							<TextInput
+								value={multiText}
+								onChangeText={setMultiText}
+								multiline={multiline}
+								style={textbox}
+								placeholder={'Type here'}
+								autoFocus={true}
+							/>
+						) : (
+							<TextInput
+								value={singleText}
+								onChangeText={setSingleText}
+								onSubmitEditing={submitText}
+								style={textbox}
+								placeholder={'Type here'}
+								autoFocus={true}
+							/>
+						)}
 					</View>
-					<View style={{...row, width: '100%'}}>
-						<TouchableHighlight underlayColor={'transparent'} onPress={dismiss} style={dialogButton}>
-							<Text style={[buttonText, {color: 'black', fontWeight: null}]}>Cancel</Text>
-						</TouchableHighlight>
-						<TouchableHighlight underlayColor={'transparent'} onPress={submitText} style={[dialogButton]}>
-							<Text style={[buttonText, {color: 'black'}]}>Submit</Text>
-						</TouchableHighlight>
-					</View>
+					<TouchableHighlight onPress={clearText} underlayColor={'transparent'} style={xButton}>
+						<Feather name={'x'} size={1.5 * em} color={'black'} />
+					</TouchableHighlight>
 				</View>
-			}
-		/>
+				<View style={{...row, width: '100%'}}>
+					<TouchableHighlight underlayColor={'transparent'} onPress={dismiss} style={dialogButton}>
+						<Text style={[buttonText, {color: 'black', fontWeight: null}]}>Cancel</Text>
+					</TouchableHighlight>
+					<TouchableHighlight underlayColor={'transparent'} onPress={submitText} style={[dialogButton]}>
+						<Text style={[buttonText, {color: 'black'}]}>Submit</Text>
+					</TouchableHighlight>
+				</View>
+			</View>
+		</Popup>
 	);
 }
 
