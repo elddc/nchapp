@@ -1,4 +1,4 @@
-import React, {useState, useContext} from 'react';
+import React, {useState, useContext, useEffect} from 'react';
 import {Text, Image, View} from 'react-native';
 
 import StyleContext from '../context/stylecontext';
@@ -38,13 +38,24 @@ const Help = ({visible, dismiss}) => {
 		}
 	]);
 
+	useEffect(() => {
+		if (cardData && !cardData.aspectRatio) {
+			console.log('hello')
+			const newCardData = cardData.map((card) => {
+				const {height, width} = Image.resolveAssetSource(card.path);
+				return {...card, aspectRatio: width/height}
+			});
+			//setCardData(newCardData);
+		}
+	}, []);
+
 	if (!cardData)
 		return null;
 
 	return (
 		<Popup visible={visible} dismiss={dismiss}>
 			<View>
-				<View style={{backgroundColor: 'red'}}><Image style={{width: '100%'}} resizeMode={'contain'} source={cardData[0].path}/></View>
+				<View style={{backgroundColor: 'red'}}><Image style={{width: '100%', aspectRatio: 2}} source={cardData[0].path}/></View>
 				<Text style={modalText}>
 					{cardData[0].text}
 				</Text>
