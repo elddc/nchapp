@@ -8,7 +8,7 @@ import Popup from './popup'
 //visible: whether component should display
 //dismiss: function to hide component
 const Help = ({visible, dismiss}) => {
-	const {modalText} = useContext(StyleContext);
+	const {modalText, modal, vh} = useContext(StyleContext);
 	const [cardData, setCardData] = useState([
 		{
 			path: require('../assets/help/timer.png'),
@@ -40,22 +40,26 @@ const Help = ({visible, dismiss}) => {
 
 	useEffect(() => {
 		if (cardData && !cardData.aspectRatio) {
-			console.log('hello')
 			const newCardData = cardData.map((card) => {
 				const {height, width} = Image.resolveAssetSource(card.path);
 				return {...card, aspectRatio: width/height}
 			});
-			//setCardData(newCardData);
+			setCardData(newCardData);
 		}
 	}, []);
 
-	if (!cardData)
+	if (!cardData || !modal)
 		return null;
 
 	return (
 		<Popup visible={visible} dismiss={dismiss}>
 			<View>
-				<View style={{backgroundColor: 'red'}}><Image style={{width: '100%', aspectRatio: 2}} source={cardData[0].path}/></View>
+				<Image style={{
+					width: modal.width - 2*modal.paddingHorizontal,
+					height: (modal.width - 2*modal.paddingHorizontal)/cardData[0].aspectRatio,
+					resizeMode: 'contain',
+				}} source={cardData[0].path}/>
+				<View style={{height: 2*vh}} />
 				<Text style={modalText}>
 					{cardData[0].text}
 				</Text>
