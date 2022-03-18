@@ -2,7 +2,7 @@ import React, {useState, useContext, useEffect} from 'react';
 import {Text, Image, View} from 'react-native';
 
 import StyleContext from '../context/stylecontext';
-import Popup from './popup'
+import {PagedPopup} from './popup'
 
 //help text, displays in modal
 //visible: whether component should display
@@ -48,24 +48,34 @@ const Help = ({visible, dismiss}) => {
 		}
 	}, []);
 
-	if (!cardData || !modal)
+	if (!visible || !cardData || !modal)
 		return null;
 
 	return (
-		<Popup visible={visible} dismiss={dismiss}>
-			<View>
-				<Image style={{
-					width: modal.width - 2*modal.paddingHorizontal,
-					height: (modal.width - 2*modal.paddingHorizontal)/cardData[0].aspectRatio,
-					resizeMode: 'contain',
-				}} source={cardData[0].path}/>
-				<View style={{height: 2*vh}} />
-				<Text style={modalText}>
-					{cardData[0].text}
-				</Text>
-			</View>
-		</Popup>
+		<PagedPopup dismiss={dismiss} data={cardData} />
 	);
 }
+
+/*
+<PagerView showPageIndicator={true}>
+			<View>
+			{cardData.map(card => {return (
+				<Popup visible={true} dismiss={dismiss} key={card.path} >
+					<View>
+						<Image style={{
+							width: modal.width - 2 * modal.paddingHorizontal,
+							height: (modal.width - 2 * modal.paddingHorizontal) / card.aspectRatio,
+							resizeMode: 'contain',
+						}} source={card.path}/>
+						<View style={{height: 2 * vh}}/>
+						<Text style={modalText}>
+							{card.text}
+						</Text>
+					</View>
+				</Popup>
+			)})}
+			</View>
+	</PagerView>
+ */
 
 export default Help;
