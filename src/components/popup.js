@@ -1,6 +1,6 @@
-import React, {useEffect, useState, useContext} from 'react';
+import React, {useEffect, useState, useContext, useRef} from 'react';
 import {TouchableHighlight, Modal, View, Text, Image, Keyboard, Platform} from 'react-native';
-import Carousel from 'react-native-snap-carousel';
+import Carousel, {Pagination} from 'react-native-snap-carousel';
 
 import StyleContext from '../context/stylecontext';
 
@@ -47,7 +47,17 @@ const Popup = ({visible, dismiss, children}) => {
 
 //paged modal without keyboard listeners
 const PagedPopup = ({data, dismiss}) => {
-	const {overlay, modal, modalText, vh} = useContext(StyleContext);
+	const {overlay, carousel, modal, modalText, vh, vw} = useContext(StyleContext);
+	const carouselRef = useRef();
+
+	const next = () => {
+		carouselRef.current.snapToNext();
+	}
+
+	const prev = () => {
+		carouselRef.current.snapToPrev();
+	}
+
 
 	return (
 		<Modal
@@ -58,19 +68,31 @@ const PagedPopup = ({data, dismiss}) => {
 			supportedOrientations={['portrait', 'landscape']}
 		>
 			<TouchableHighlight onPress={dismiss} style={overlay} underlayColor={'transparent'}>
-				<Carousel data={data} itemWidth={modal.width} sliderWidth={modal.width} renderItem={({item}) => (
-					<TouchableHighlight style={modal}>
-						<View>
-							<Image source={item.path} style={{
-								width: modal.width - 2 * modal.paddingHorizontal,
-								height: (modal.width - 2 * modal.paddingHorizontal) / item.aspectRatio,
-								resizeMode: 'contain',
-								marginBottom: 2 * vh,
-							}}/>
-							<Text style={modalText}>{item.text}</Text>
-						</View>
-					</TouchableHighlight>
-				)}/>
+				<View>
+					<Carousel
+						data={data}
+						itemWidth={modal.width}
+						sliderWidth={100 * vw}
+						contentContainerCustomStyle={carousel}
+						inactiveSlideScale={.7}
+						inactiveSlideOpacity={1}
+						renderItem={({item}) => (
+							<TouchableHighlight style={modal}>
+								<View>
+									<Image source={item.path} style={{
+										width: modal.width - 2 * modal.paddingHorizontal,
+										height: (modal.width - 2 * modal.paddingHorizontal) / item.aspectRatio,
+										resizeMode: 'contain',
+										marginBottom: 2 * vh,
+									}}/>
+									<Text style={modalText}>{item.text}</Text>
+								</View>
+							</TouchableHighlight>
+						)}
+						ref={carouselRef}
+					/>
+					<Pagination dotsLength={data.length} activeDotIndex={carouselRef.current ? carouselRef.current.currentIndex : 2}/>
+				</View>
 			</TouchableHighlight>
 		</Modal>
 	);

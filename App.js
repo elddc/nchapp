@@ -150,6 +150,13 @@ const App = () => {
 			backgroundColor: '#555555AA',
 			...center,
 		};
+		const carousel = {
+			alignItems: 'center',
+			paddingBottom: 5*vh,
+			flexGrow: 0,
+			borderWidth: 2,
+			borderColor: 'white'
+		}
 		const modal = {
 			backgroundColor: 'white',
 			width: landscape ? 70*vh : 80*vw,
@@ -221,7 +228,7 @@ const App = () => {
 			timerContainer, timer, timerText,
 			cell, headerCell, eventLog,
 			bottomLeft, metronomeRow, bottomRight,
-			overlay, modal, modalText,
+			overlay, carousel, modal, modalText,
 			option, optionText, header, headerText,
 			textboxContainer, textbox,
 			hidden,
