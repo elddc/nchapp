@@ -47,17 +47,17 @@ const Popup = ({visible, dismiss, children}) => {
 
 //paged modal without keyboard listeners
 const PagedPopup = ({data, dismiss}) => {
-	const {overlay, carousel, modal, modalText, vh, vw} = useContext(StyleContext);
+	const {overlay, carousel, dot, modal, modalText, image, landscape, vh, vw} = useContext(StyleContext);
+	const [currentIndex, setCurrentIndex] = useState(0);
 	const carouselRef = useRef();
 
-	const next = () => {
+	/*const next = () => {
 		carouselRef.current.snapToNext();
 	}
 
 	const prev = () => {
 		carouselRef.current.snapToPrev();
-	}
-
+	}*/
 
 	return (
 		<Modal
@@ -72,26 +72,33 @@ const PagedPopup = ({data, dismiss}) => {
 					<Carousel
 						data={data}
 						itemWidth={modal.width}
-						sliderWidth={100 * vw}
+						sliderWidth={100 * (landscape ? vh : vw)}
 						contentContainerCustomStyle={carousel}
-						inactiveSlideScale={.7}
+						inactiveSlideScale={0}
 						inactiveSlideOpacity={1}
+						onBeforeSnapToItem={(i) => setCurrentIndex(i)}
 						renderItem={({item}) => (
 							<TouchableHighlight style={modal}>
 								<View>
-									<Image source={item.path} style={{
-										width: modal.width - 2 * modal.paddingHorizontal,
-										height: (modal.width - 2 * modal.paddingHorizontal) / item.aspectRatio,
-										resizeMode: 'contain',
-										marginBottom: 2 * vh,
-									}}/>
+									<Image source={item.path} style={{...image, height: image.width/item.aspectRatio}}/>
 									<Text style={modalText}>{item.text}</Text>
 								</View>
 							</TouchableHighlight>
 						)}
 						ref={carouselRef}
 					/>
-					<Pagination dotsLength={data.length} activeDotIndex={carouselRef.current ? carouselRef.current.currentIndex : 2}/>
+					<Pagination
+						dotsLength={data.length}
+						activeDotIndex={currentIndex}
+						dotStyle={dot}
+						inactiveDotOpacity={.5}
+						inactiveDotScale={.7}
+						animatedDuration={200}
+						animatedFriction={2.5}
+						animatedTension={60}
+						tappableDots={true}
+						carouselRef={carouselRef}
+					/>
 				</View>
 			</TouchableHighlight>
 		</Modal>

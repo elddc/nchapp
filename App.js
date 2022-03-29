@@ -154,20 +154,30 @@ const App = () => {
 			alignItems: 'center',
 			paddingBottom: 5*vh,
 			flexGrow: 0,
-			borderWidth: 2,
-			borderColor: 'white'
-		}
+		};
+		const dot = {
+			height: 15,
+			width: 15,
+			borderRadius: 15,
+			backgroundColor: 'white',
+			marginHorizontal: 3,
+		};
 		const modal = {
 			backgroundColor: 'white',
-			width: landscape ? 70*vh : 80*vw,
+			width: landscape ? 60*vh : 80*vw,
 			borderRadius: 4*vh,
 			alignSelf: 'center',
-			paddingVertical: 2*vh,
-			paddingHorizontal: 5*vw,
+			padding: Math.min(5*vw, 1.4*em),
 		};
 		const modalText = {
 			...text,
 			color: 'black',
+		};
+		const image = {
+			width: modal.width - 2*modal.padding,
+			resizeMode: 'contain',
+			marginBottom: modal.padding - 2,
+			borderRadius: 2*vh,
 		};
 		const hidden = {
 			display: 'none',
@@ -228,7 +238,7 @@ const App = () => {
 			timerContainer, timer, timerText,
 			cell, headerCell, eventLog,
 			bottomLeft, metronomeRow, bottomRight,
-			overlay, carousel, modal, modalText,
+			overlay, carousel, dot, image, modal, modalText,
 			option, optionText, header, headerText,
 			textboxContainer, textbox,
 			hidden,
