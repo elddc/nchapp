@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useContext, useCallback} from 'react';
-import {Text, View, TouchableHighlight, StatusBar, Alert, Platform} from 'react-native';
+import {Text, View, TouchableHighlight, StatusBar, SafeAreaView, Alert, Platform} from 'react-native';
 import {debounce} from 'debounce';
 import {useKeepAwake} from 'expo-keep-awake';
 import {usePermissions} from 'expo-media-library';
@@ -169,7 +169,7 @@ const Main = () => {
         else {
             Alert.alert(
                 'Are you sure you want to end the timer?',
-                'You cannot undo this action!',
+                'Don\'t worry, you can undo this action.',
                 [
                     {text: 'No'},
                     {text: 'Yes', style: 'destructive', onPress: () => {logEvent('End')}},
@@ -302,7 +302,7 @@ const Main = () => {
     }
 
     return (
-        <View style={container}>
+        <SafeAreaView style={container}>
             <StatusBar barStyle={'light-content'} />
             <TimeContext.Provider value={startTime}>
                 <View style={main}>
@@ -374,7 +374,7 @@ const Main = () => {
                 ) : null}
 
             </TimeContext.Provider>
-        </View>
+        </SafeAreaView>
     );
 }
 

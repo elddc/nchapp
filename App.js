@@ -78,8 +78,7 @@ const App = () => {
 		const container = {
 			flex: 1,
 			alignItems: 'center',
-			backgroundColor: 'black',
-			paddingTop: 1.2*vh,
+			backgroundColor: 'black'
 		};
 		const main = {
 			flexDirection: (landscape ? 'row' : 'column'),
@@ -95,8 +94,9 @@ const App = () => {
 			position: 'absolute',
 			top: 0,
 			left: 0,
-			height: '100%',
+			height: 100 * (landscape ? vw : vh), //'100%' leaves small gap at bottom
 			width: '100%',
+			paddingTop: vh,
 			backgroundColor: 'black',
 		};
 		const timer = {
@@ -201,7 +201,6 @@ const App = () => {
 			paddingVertical: .8*em,
 			borderBottomWidth: 2,
 			borderColor: 'white',
-			backgroundColor: 'black',
 		};
 		const headerText = {
 			...text,

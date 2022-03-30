@@ -24,12 +24,12 @@ const Header = () => {
 //items in table
 	//name: name to display
 	//time: timestamp in ms
-const Row = ({name, time}) => {
-	const {tableRow, cell} = useContext(StyleContext);
+const Row = ({name, time, fitWidth}) => {
+	const {tableRow, cell, horiLine} = useContext(StyleContext);
 	const startTime = useContext(TimeContext);
 
 	return (
-		<View style={tableRow}>
+		<View style={fitWidth ? {...tableRow, width: horiLine.width} : tableRow}>
 			<Text style={cell}>{name}</Text>
 			<Text style={cell}>{formatTime(time - startTime)}</Text>
 			<Text style={cell}>{new Date(time).toTimeString().split(' ')[0]}</Text>
@@ -181,7 +181,7 @@ const FullscreenLog = (({events, dismiss, notes, capture}) => {
 						return (
 							<View key={item.index}>
 								<Separator />
-								<Row name={item.name} time={item.time} />
+								<Row name={item.name} time={item.time} fitWidth={true} />
 							</View>
 						)
 					})}

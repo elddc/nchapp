@@ -11,7 +11,7 @@ const Option = ({name, select}) => {
 	const {option, optionText} = useContext(StyleContext);
 
 	return (
-		<TouchableHighlight style={option} onPress={select}>
+		<TouchableHighlight style={option} onPress={select} underlayColor={'#333333'} activeOpacity={1}>
 			<Text style={optionText}>{name}</Text>
 		</TouchableHighlight>
 	)
@@ -35,7 +35,7 @@ const OptionList = ({title, options, dismiss, select}) => {
 				)}
 				keyExtractor={(name) => name}
 				ListHeaderComponent={
-					<TouchableHighlight onPress={dismiss}>
+					<TouchableHighlight onPress={dismiss} style={{backgroundColor: 'black'}} underlayColor={'#555555'} activeOpacity={1}>
 					    <View style={header}>
 					        <Feather name={'chevron-left'} size={2 * em} color={'white'} />
     						<Text style={headerText}>{title}</Text>
