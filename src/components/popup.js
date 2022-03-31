@@ -1,5 +1,5 @@
 import React, {useEffect, useState, useContext, useRef} from 'react';
-import {TouchableHighlight, Modal, View, Text, Image, Keyboard, Platform} from 'react-native';
+import {TouchableHighlight, TouchableWithoutFeedback, Modal, View, Text, Image, Keyboard, Platform} from 'react-native';
 import Carousel, {Pagination} from 'react-native-snap-carousel';
 
 import StyleContext from '../context/stylecontext';
@@ -51,13 +51,12 @@ const PagedPopup = ({data, dismiss}) => {
 	const [currentIndex, setCurrentIndex] = useState(0);
 	const carouselRef = useRef();
 
-	/*const next = () => {
-		carouselRef.current.snapToNext();
+	const turnCarousel = (ev) => {
+		if (ev.nativeEvent.locationX < modal.width/2)
+			carouselRef.current.snapToPrev();
+		else
+			carouselRef.current.snapToNext();
 	}
-
-	const prev = () => {
-		carouselRef.current.snapToPrev();
-	}*/
 
 	return (
 		<Modal
@@ -67,8 +66,8 @@ const PagedPopup = ({data, dismiss}) => {
 			statusBarTranslucent={true}
 			supportedOrientations={['portrait', 'landscape']}
 		>
-			<TouchableHighlight onPress={dismiss} style={overlay} underlayColor={'transparent'}>
-				<View>
+			<TouchableWithoutFeedback onPress={dismiss}>
+				<View style={overlay}>
 					<Carousel
 						data={data}
 						itemWidth={modal.width}
@@ -78,29 +77,31 @@ const PagedPopup = ({data, dismiss}) => {
 						inactiveSlideOpacity={1}
 						onBeforeSnapToItem={(i) => setCurrentIndex(i)}
 						renderItem={({item}) => (
-							<TouchableHighlight style={modal}>
-								<View>
+							<TouchableWithoutFeedback onPress={turnCarousel}>
+								<View style={modal}>
 									<Image source={item.path} style={{...image, height: image.width/item.aspectRatio}}/>
 									<Text style={modalText}>{item.text}</Text>
 								</View>
-							</TouchableHighlight>
+							</TouchableWithoutFeedback>
 						)}
 						ref={carouselRef}
 					/>
-					<Pagination
-						dotsLength={data.length}
-						activeDotIndex={currentIndex}
-						dotStyle={dot}
-						inactiveDotOpacity={.5}
-						inactiveDotScale={.7}
-						animatedDuration={200}
-						animatedFriction={2.5}
-						animatedTension={60}
-						tappableDots={true}
-						carouselRef={carouselRef}
-					/>
+					<TouchableWithoutFeedback>
+						<View><Pagination
+							dotsLength={data.length}
+							activeDotIndex={currentIndex}
+							dotStyle={dot}
+							inactiveDotOpacity={.5}
+							inactiveDotScale={.7}
+							animatedDuration={200}
+							animatedFriction={2.5}
+							animatedTension={60}
+							tappableDots={true}
+							carouselRef={carouselRef}
+						/></View>
+					</TouchableWithoutFeedback>
 				</View>
-			</TouchableHighlight>
+			</TouchableWithoutFeedback>
 		</Modal>
 	);
 }
