@@ -22,6 +22,8 @@ const Popup = ({visible, dismiss, children}) => {
 				setKeyboardActive(false);
 			})
 		];
+
+		//clean-up
 		return () => {
 			listeners[0].remove();
 			listeners[1].remove();
@@ -36,26 +38,36 @@ const Popup = ({visible, dismiss, children}) => {
 			statusBarTranslucent={true}
 			supportedOrientations={['portrait', 'landscape']}
 		>
-			<TouchableHighlight onPress={dismiss} style={overlay} underlayColor={'transparent'}>
-				<TouchableHighlight style={{...modal, marginBottom: keyboardActive ? 18*em : 0}}>
-					{children}
-				</TouchableHighlight>
-			</TouchableHighlight>
+			<TouchableWithoutFeedback onPress={dismiss}>
+				<View style={overlay} >
+					<TouchableWithoutFeedback>
+						<View style={{...modal, marginBottom: keyboardActive ? 18 * em : 0}}>
+							{children}
+						</View>
+					</TouchableWithoutFeedback>
+				</View>
+			</TouchableWithoutFeedback>
 		</Modal>
 	);
 }
 
-//paged modal without keyboard listeners
+//multipage modal, each page with an image and some text
+	//data: object with image path, aspect ratio, and caption
+	//dismiss: function to hide component
 const PagedPopup = ({data, dismiss}) => {
 	const {overlay, carousel, dot, modal, modalText, image, landscape, vh, vw} = useContext(StyleContext);
 	const [currentIndex, setCurrentIndex] = useState(0);
 	const carouselRef = useRef();
 
+	//control active card by tapping on sides
 	const turnCarousel = (ev) => {
-		if (ev.nativeEvent.locationX < modal.width/2)
-			carouselRef.current.snapToPrev();
-		else
-			carouselRef.current.snapToNext();
+		try {
+			if (ev.nativeEvent.locationX < modal.width / 2)
+				carouselRef.current.snapToPrev();
+			else
+				carouselRef.current.snapToNext();
+		}
+		catch (err) { console.log(err) }
 	}
 
 	return (

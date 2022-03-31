@@ -175,7 +175,7 @@ const FullscreenLog = (({events, dismiss, notes, capture}) => {
 				directionalLockEnabled={true}
 				style={eventLog}
 			>
-				<View ref={viewShotRef} style={{backgroundColor: 'black', alignSelf: 'center', paddingVertical: em}}>
+				<View ref={viewShotRef} style={{backgroundColor: 'black', alignSelf: 'center', padding: em}}>
 					<Header/>
 					{events.map((item) => {
 						return (

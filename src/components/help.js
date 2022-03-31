@@ -5,11 +5,11 @@ import StyleContext from '../context/stylecontext';
 import {PagedPopup} from './popup'
 
 //help text, displays in modal
-//visible: whether component should display
-//dismiss: function to hide component
+	//visible: whether component should display
+	//dismiss: function to hide component
 const Help = ({visible, dismiss}) => {
 	const {modal} = useContext(StyleContext);
-	const [cardData, setCardData] = useState([
+	const [cardData, setCardData] = useState([ //images and text for each card
 		{
 			path: require('../assets/help/timer.png'),
 			text: 'Tap once to start the timer, and long press to stop.'
@@ -38,6 +38,7 @@ const Help = ({visible, dismiss}) => {
 		}
 	]);
 
+	//set up image height using aspect ratios
 	useEffect(() => {
 		if (cardData && !cardData.aspectRatio) {
 			const newCardData = cardData.map((card) => {
