@@ -51,10 +51,9 @@ const App = () => {
 		};
 		const button = {
 			...center,
-			minHeight: 2*vh,
-			margin: 1.2*vw,
+			margin: 1.3*vw,
 			padding: 2.5*vw,
-			borderRadius: 5*vh,
+			borderRadius: 5*em,
 			alignSelf: 'center',
 		};
 		const actionButton = {
@@ -139,7 +138,7 @@ const App = () => {
 		};
 		const metronomeRow = {
 			...row,
-			width: 80*vw - 5*em,
+			width: '65%',
 			position: 'absolute',
 			bottom: .5*em,
 			marginHorizontal: 'auto',
