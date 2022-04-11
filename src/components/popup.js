@@ -1,13 +1,13 @@
 import React, {useEffect, useState, useContext, useRef} from 'react';
-import {TouchableHighlight, TouchableWithoutFeedback, Modal, View, Text, Image, Keyboard, Platform} from 'react-native';
+import {TouchableWithoutFeedback, Modal, View, Text, Image, Keyboard, Platform} from 'react-native';
 import Carousel, {Pagination} from 'react-native-snap-carousel';
 
 import StyleContext from '../context/stylecontext';
 
 //keyboard-avoiding modal, used as container for content
-	//visible: whether component should display
-	//dismiss: function to hide component
-	//content: inner part of component
+//visible: whether component should display
+//dismiss: function to hide component
+//content: inner part of component
 const Popup = ({visible, dismiss, children}) => {
 	const {em, overlay, modal} = useContext(StyleContext);
 	const [keyboardActive, setKeyboardActive] = useState(false); //whether keyboard is open
@@ -52,8 +52,8 @@ const Popup = ({visible, dismiss, children}) => {
 }
 
 //multipage modal, each page with an image and some text
-	//data: object with image path, aspect ratio, and caption
-	//dismiss: function to hide component
+//data: object with image path, aspect ratio, and caption
+//dismiss: function to hide component
 const PagedPopup = ({data, dismiss}) => {
 	const {overlay, carousel, dot, modal, modalText, image, landscape, vh, vw} = useContext(StyleContext);
 	const [currentIndex, setCurrentIndex] = useState(0);
@@ -99,18 +99,22 @@ const PagedPopup = ({data, dismiss}) => {
 						ref={carouselRef}
 					/>
 					<TouchableWithoutFeedback>
-						<View><Pagination
-							dotsLength={data.length}
-							activeDotIndex={currentIndex}
-							dotStyle={dot}
-							inactiveDotOpacity={.5}
-							inactiveDotScale={.7}
-							animatedDuration={200}
-							animatedFriction={2.5}
-							animatedTension={60}
-							tappableDots={true}
-							carouselRef={carouselRef}
-						/></View>
+						<View>
+							<Pagination
+								dotsLength={data.length}
+								activeDotIndex={currentIndex}
+								dotStyle={dot}
+								inactiveDotOpacity={.5}
+								inactiveDotScale={.7}
+								animatedDuration={200}
+								animatedFriction={2.5}
+								animatedTension={60}
+								tappableDots={true}
+								enableMomentum={true}
+								decelerationRate={0.9}
+								carouselRef={carouselRef}
+							/>
+						</View>
 					</TouchableWithoutFeedback>
 				</View>
 			</TouchableWithoutFeedback>
