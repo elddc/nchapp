@@ -1,10 +1,12 @@
 import React, {useState, useEffect} from 'react';
 import {useWindowDimensions, StyleSheet, Platform} from 'react-native';
+import {useKeepAwake} from 'expo-keep-awake';
 import Main from './src/main';
 import StyleContext from './src/context/stylecontext';
 
 //houses styling
 const App = () => {
+	useKeepAwake(); //prevent device from sleeping
 	const [styles, setStyles] = useState({landscape: false, vw: 0, vh: 0, em: 0});
 	const dm = useWindowDimensions();
 

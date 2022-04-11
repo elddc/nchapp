@@ -1,7 +1,6 @@
 import React, {useState, useEffect, useContext, useCallback} from 'react';
 import {Text, View, TouchableHighlight, StatusBar, SafeAreaView, Alert, Platform} from 'react-native';
 import {debounce} from 'debounce';
-import {useKeepAwake} from 'expo-keep-awake';
 import {usePermissions} from 'expo-media-library';
 import {Audio} from 'expo-av';
 import {Feather} from '@expo/vector-icons';
@@ -19,7 +18,6 @@ import ActionButtons from './components/actionbuttons';
 
 //core app
 const Main = () => {
-    useKeepAwake(); //prevent device from sleeping
     const [permissions, requestPermissions] = usePermissions(); //access to camera roll (for saving image of log)
 
     //styles
@@ -300,6 +298,10 @@ const Main = () => {
             index: previousEvents.length, //used as key in flatlist
         }]);
     }
+
+    //wait for styles to initialize
+    if (!container)
+        return null;
 
     return (
         <SafeAreaView style={container}>
